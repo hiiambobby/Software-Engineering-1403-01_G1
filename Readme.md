@@ -34,10 +34,6 @@ In the main branch of the repo in `src` directory, there is a folder for each te
 Please just change your folder and put all the items related to your project in the same folder.
 If you need to change the rest of the sections, please ensure [coordination first](#question-or-problem).
 
-### Question or Problem?
-
-Your inquiries and feedback are always welcome. For any questions or concerns,
-please reach out via Telegram to: [@k3rn3lpanic](https://t.me/k3rn3lpanic).
 
 ## Submitting a Pull Request
 
