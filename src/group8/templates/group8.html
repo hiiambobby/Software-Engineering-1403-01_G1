@@ -1,17 +1,93 @@
 <!DOCTYPE html>
-{% load static %}
-<html lang="fa">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحه خانه</title>
-    <link rel="stylesheet" href="{% static 'base/home_style.css' %}">
+    <title>Learn Words with Pictures</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <div class="welcome-container">
-        <h1>خوش آمدید به گروه {{ group_number }}
-            میکروسرویس خود را اینجا توسعه دهید
-        </h1>
-    </div>
+    <header>
+        <h1>Learn Words with Pictures</h1>
+    </header>
+
+    <section id="selection">
+        <h2>Select Category and Level</h2>
+        <form>
+            <label for="category">Category:</label>
+            <select id="category">
+                <option value="" selected disabled>Not selected</option>
+                <option value="animals">Animals</option>
+                <option value="objects">Objects</option>
+                <option value="fruits">Fruits</option>
+            </select>
+
+            <label for="level">Level:</label>
+            <select id="level">
+                <option value="" selected disabled>Not selected</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+            <button type="submit">Show Words</button>
+        </form>
+    </section>
+
+    <section id="words">
+        <h2>Words List</h2>
+        <ul id="word-list">
+            <!-- Example items -->
+            <li>
+                <h3>Cat</h3>
+                <p>Category: Animals | Level: Beginner</p>
+                <img src="yellowblackbear.jpeg" alt="Bear">
+                <button>See More</button>
+            </li>
+        </ul>
+    </section>
+
+    <section id="add-word">
+        <h2>Add New Word</h2>
+        <form>
+            <label for="word-title">Word:</label>
+            <input type="text" id="word-title" placeholder="Enter the word">
+
+            <label for="word-category">Category:</label>
+            <select id="word-category">
+                <option value="" selected disabled>Not selected</option>
+                <option value="animals">Animals</option>
+                <option value="objects">Objects</option>
+                <option value="fruits">Fruits</option>
+            </select>
+
+            <label for="word-level">Level:</label>
+            <select id="word-level">
+                <option value="" selected disabled>Not selected</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+
+            <label for="word-image">Image:</label>
+            <input type="file" id="word-image">
+            <button type="submit">Add Word</button>
+        </form>
+    </section>
+
+    <section id="search">
+        <h2>Search Words</h2>
+        <form>
+            <input type="text" id="search-bar" placeholder="Search by title, category, or level">
+            <button type="submit">Search</button>
+        </form>
+    </section>
+
+    <section id="progress">
+        <h2>Progress Report</h2>
+        <p>You have learned <span id="words-learned">0</span> words!</p>
+    </section>
 </body>
+
 </html>
