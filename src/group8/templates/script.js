@@ -1,7 +1,7 @@
 // Mock function simulating backend response
 function loadWordsFromBackend(category, level) {
     const mockWords = [
-        { title: 'Cat', image: 'cat.jpg', category: 'Animals', level: 'Beginner' },
+        { title: 'Cat', image: 'yellowblackbear.jpeg', category: 'Animals', level: 'Beginner' },
         { title: 'Dog', image: 'dog.jpg', category: 'Animals', level: 'Beginner' },
         { title: 'Apple', image: 'apple.jpg', category: 'Fruits', level: 'Beginner' },
         { title: 'Table', image: 'table.jpg', category: 'Objects', level: 'Beginner' },
@@ -10,7 +10,7 @@ function loadWordsFromBackend(category, level) {
 }
 
 // Initialize variables
-let wordsLearned = 0;
+let currentPage = 0;
 let allWords = [];
 
 // Toggle sound icon
@@ -30,38 +30,74 @@ searchBar.addEventListener('input', () => {
         word.category.toLowerCase().includes(searchText) ||
         word.level.toLowerCase().includes(searchText)
     );
-    updateWordList(filteredWords);
+    currentPage = 0; // Reset to the first page
+    updateWordDisplay(filteredWords);
 });
 
-// Update word list and progress
-function updateWordList(words = allWords) {
+// Update displayed word and pagination controls
+function updateWordDisplay(words = allWords) {
     const wordList = document.getElementById('word-list');
-    wordList.innerHTML = '';
-    words.forEach(word => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <h3>${word.title}</h3>
+    const paginationControls = document.getElementById('pagination-controls');
+
+    if (words.length === 0) {
+        wordList.innerHTML = '<p>No words to display.</p>';
+        paginationControls.innerHTML = '';
+        return;
+    }
+
+    // Display only the current word
+    const word = words[currentPage];
+    wordList.innerHTML = `
+        <li>
+          <h3>${word.title}</h3>
             <img src="${word.image}" alt="${word.title}">
-            <button class="learned-btn">I know this word</button>
-            <button class="favorite-btn">Favorite</button>
-        `;
-        wordList.appendChild(li);
+            <button class="learned-btn">I know this word!</button>
+            <button class="dont-remember-btn">I don't remember</button>
+            <button class="favorite-btn">Like</button>
+        </li>
+    `;
 
-        // 'I know this word' button functionality
-        li.querySelector('.learned-btn').addEventListener('click', () => {
-            wordsLearned++;
-            document.getElementById('words-learned').textContent = wordsLearned;
-            li.querySelector('.learned-btn').disabled = true;
-            if (isSoundOn) {
-                alert('Sound: You learned the word!');
-            }
-        });
+    // 'I know this word' button functionality
+    const learnedBtn = wordList.querySelector('.learned-btn');
+    learnedBtn.addEventListener('click', () => {
+        learnedBtn.disabled = true;
+        if (isSoundOn) {
+            alert('Sound: You learned the word!');
+        }
+    });
 
-        // 'Favorite' button functionality
-        li.querySelector('.favorite-btn').addEventListener('click', () => {
-            li.querySelector('.favorite-btn').textContent = 'Favorited';
-            li.querySelector('.favorite-btn').disabled = true;
-        });
+     // 'I don't remember' button functionality
+    const dontRememberBtn = wordList.querySelector('.dont-remember-btn');
+    dontRememberBtn.addEventListener('click', () => {
+           if (isSoundOn) {
+            alert('فدای سرت');
+        }
+    });
+
+
+    // 'Favorite' button functionality
+    const favoriteBtn = wordList.querySelector('.favorite-btn');
+    favoriteBtn.addEventListener('click', () => {
+        favoriteBtn.textContent = 'Liked';
+        favoriteBtn.disabled = true;
+    });
+
+    // Update pagination controls
+    paginationControls.innerHTML = `
+        <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''}>Previous</button>
+        <span>Word ${currentPage + 1} of ${words.length}</span>
+        <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''}>Next</button>
+    `;
+
+    // Add event listeners for pagination buttons
+    document.getElementById('prev-btn').addEventListener('click', () => {
+        currentPage--;
+        updateWordDisplay(words);
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+        currentPage++;
+        updateWordDisplay(words);
     });
 }
 
@@ -72,7 +108,8 @@ document.getElementById('start-btn').addEventListener('click', () => {
     if (category && level) {
         const words = loadWordsFromBackend(category, level);
         allWords = words;
-        updateWordList(words);
+        currentPage = 0; // Reset to the first page
+        updateWordDisplay(words);
     } else {
         alert('Please select both category and level.');
     }
@@ -91,10 +128,13 @@ document.getElementById('add-word-btn').addEventListener('click', () => {
         reader.onload = (e) => {
             const newWord = { title, category, level, image: e.target.result };
             allWords.push(newWord);
-            updateWordList(allWords);
+            fileInput.value = ''; // Clear the file input
+            document.getElementById('image-preview').innerHTML = ''; // Clear the image preview
+            currentPage = allWords.length - 1; // Show the newly added word
+            updateWordDisplay(allWords);
             alert('New word added successfully!');
         };
-        reader.readAsDataURL(file); // Convert file to Base64
+        reader.readAsDataURL(file);
     } else {
         alert('Please fill out all fields and select an image to add a new word.');
     }
