@@ -66,10 +66,10 @@ function updateWordDisplay(words = allWords) {
         }
     });
 
-     // 'I don't remember' button functionality
+    // 'I don't remember' button functionality
     const dontRememberBtn = wordList.querySelector('.dont-remember-btn');
     dontRememberBtn.addEventListener('click', () => {
-           if (isSoundOn) {
+        if (isSoundOn) {
             alert('فدای سرت');
         }
     });
