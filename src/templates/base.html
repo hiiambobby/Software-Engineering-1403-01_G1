@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه خانه</title>
-    <link rel="stylesheet" href="{% static 'base/style.css' %}">
+    <link rel="stylesheet" href="/src/static/base/style.css">
 </head>
 <body>
     <div class="welcome-container">
         <h1>به سامانه میکروسرویس ها خوش آمدید</h1>
         <div class="button-container">
             {% for group in groups %}
-                <a href="{% url group.url %}" class="button">ورود به گروه {{ group.id }}</a>
+                <a href="/src/group8/templates/group8.html" class="button">ورود به گروه {{ 8 }}</a>
             {% endfor %}
         </div>
     </div>
