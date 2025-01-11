@@ -1,10 +1,13 @@
 #loader {
     width: 40px;
-    /* Smaller size */
     height: 40px;
     border: 4px solid rgba(255, 255, 255, 0.2);
     border-top: 4px solid #ff512f;
+    animation: spin 1.5s linear infinite;
+    margin: 0 auto;
+    display: block;
 }
+
 @keyframes spin {
     0% {
         transform: translate(-50%, -50%) rotate(0deg);
@@ -197,10 +200,11 @@ img {
     border: 2px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 li img {
     max-width: 70%;
-    /* Reduced image scaling */
 }
+
 img:hover {
     transform: scale(1.1);
     box-shadow: 0 4px 16px rgba(255, 255, 255, 0.3);
@@ -216,4 +220,68 @@ img:hover {
     padding: 0.5rem;
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.progress-category {
+    margin-bottom: 2rem;
+    /* Increase spacing between categories */
+    text-align: center;
+}
+
+.progress-category h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #ffa500;
+    /* Orange color */
+    text-transform: uppercase;
+    /* Make it bold and uppercase */
+    margin-bottom: 1rem;
+    /* Space between title and the circles */
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    /* Slight background for separation */
+    border: 2px solid #ff512f;
+    /* Orange border */
+    font-family: 'Arial', sans-serif;
+    /* Change the font to Arial */
+    position: relative;
+}
+
+.progress-category h3::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    /* Position it just below the text */
+    left: 0;
+    width: 100%;
+    height: 2px;
+    /* Line thickness */
+    background-color: #ffa500;
+    /* Orange color */
+}
+.circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: conic-gradient(#4caf50 0%, lightgray 0%);
+    margin: 0 auto;
+    position: relative;
+}
+
+.circle span {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.circle-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ffffff;
 }
