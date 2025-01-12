@@ -1,10 +1,11 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-class Word(models.Model):
 
-    title = models.CharField(max_length=255,default="none")
-    level = models.CharField(max_length=50,default="none")
+
+class Word(models.Model):
+    title = models.CharField(max_length=255, default="none")
+    level = models.CharField(max_length=50, default="none")
     category = models.CharField(max_length=50, default="none")
     image_url = models.CharField(max_length=255, default="http://example.com/default_image.jpg")
 
@@ -22,7 +23,8 @@ class Word(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+
 class UserProgress(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='progress')
     learned_words = models.ManyToManyField(Word, related_name='learned_by')
@@ -31,13 +33,30 @@ class UserProgress(models.Model):
         return self.learned_words.count()
 
     def get_learned_by_category(self):
-        return self.learned_words.values('category').annotate(count=models.Count('category'))
+        """
+        Returns a dictionary like {"Fruit": 5, "Vegetable": 2, ...}
+        """
+        from django.db.models import Count
+        qs = self.learned_words.values('category').annotate(count=Count('category'))
+        result = {}
+        for row in qs:
+            cat = row['category']
+            cnt = row['count']
+            result[cat] = cnt
+        return result
 
     def get_learned_by_level(self):
-        return self.learned_words.values('level').annotate(count=models.Count('level'))
+        """
+        Returns a dictionary like {"Beginner": 3, "Intermediate": 1, ...}
+        """
+        from django.db.models import Count
+        qs = self.learned_words.values('level').annotate(count=Count('level'))
+        result = {}
+        for row in qs:
+            lvl = row['level']
+            cnt = row['count']
+            result[lvl] = cnt
+        return result
 
     def __str__(self):
         return f"Progress for {self.user.username}"
-
-########################################karbala   : done 
-
