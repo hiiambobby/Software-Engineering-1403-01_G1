@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Word, Category, Level
 from django.db.models import Count
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .services import WordService
+import json
+from .models import *
 
 
 
@@ -45,3 +48,103 @@ def MarkAsLearned(request, word_id):
     word.learned_users.add(request.user)
 
     return HttpResponse("Word marked as learned!")
+
+
+
+@csrf_exempt
+def add_word_view(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            word_data = {
+                "title": data.get("title"),
+                "category": data.get("category"),
+                "level": data.get("level"),
+                "image_url": data.get("image_url"),
+            }
+
+            word = WordService.add_word(request.user, word_data)
+            if word:
+                return JsonResponse({"message": "Word added successfully.", "word_id": word.id}, status=201)
+            return JsonResponse({"error": "Failed to add word."}, status=500)
+        except Exception as e:
+            return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt
+def delete_word_view(request, word_id):
+    if request.method == "DELETE":
+        success = WordService.delete_word(request.user, word_id)
+        if success:
+            return JsonResponse({"message": "Word deleted successfully."}, status=200)
+        return JsonResponse({"error": "Failed to delete word."}, status=404)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt
+def edit_word_view(request, word_id):
+    if request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            word_data = {
+                "title": data.get("title"),
+                "category": data.get("category"),
+                "level": data.get("level"),
+                "image_url": data.get("image_url"),
+            }
+            word = WordService.edit_word(request.user, word_id, word_data)
+            if word:
+                return JsonResponse({"message": "Word updated successfully.", "word_id": word.id}, status=200)
+            return JsonResponse({"error": "Failed to update word."}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt
+def get_words_by_category_level_view(request):
+    if request.method == "GET":
+        category = request.GET.get("category")
+        level = request.GET.get("level")
+        if not category or not level:
+            return JsonResponse({"error": "Category and level are required."}, status=400)
+        words = WordService.get_words_by_category_level(category, level)
+        words_list = [
+            {"id": word.id, "title": word.title, "category": word.category, "level": word.level, "image_url": word.image_url}
+            for word in words
+        ]
+        return JsonResponse({"words": words_list}, status=200)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt
+def search_word_view(request):
+    if request.method == "GET":
+        title = request.GET.get("title")
+        category = request.GET.get("category", None)
+        if not title:
+            return JsonResponse({"error": "Title is required."}, status=400)
+        words = WordService.search_word(title, category)
+        words_list = [
+            {"id": word.id, "title": word.title, "category": word.category, "level": word.level, "image_url": word.image_url}
+            for word in words
+        ]
+        return JsonResponse({"words": words_list}, status=200)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+
+
+@csrf_exempt
+def mark_word_as_learned_view(request, word_id):
+    if request.method == "POST":
+        success = WordService.mark_word_as_learned(request.user, word_id)
+        if success:
+            return JsonResponse({"message": "Word marked as learned successfully."}, status=200)
+        return JsonResponse({"error": "Failed to mark word as learned."}, status=404)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt
+def progress_report_view(request):
+    if request.method == "GET":
+        progress = WordService.get_user_progress(request.user)
+        if progress:
+            return JsonResponse({"progress": progress}, status=200)
+        return JsonResponse({"error": "Failed to retrieve progress report."}, status=500)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
