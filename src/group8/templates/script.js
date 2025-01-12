@@ -1,11 +1,12 @@
 // Mock function simulating backend response
 function loadWordsFromBackend(category, level) {
-    const mockWords = [
-        { title: 'Cat', image: 'yellowblackbear.jpeg', category: 'Animals', level: 'Beginner' },
-        { title: 'Dog', image: 'dog.jpg', category: 'Animals', level: 'Beginner' },
-        { title: 'Apple', image: 'apple.jpg', category: 'Fruits', level: 'Beginner' },
-        { title: 'Table', image: 'table.jpg', category: 'Objects', level: 'Beginner' },
-    ];
+const mockWords = [
+    { title: 'Cat', image: 'yellowblackbear.jpeg', category: 'animals', level: 'beginner' },
+    { title: 'Dog', image: 'dog.png', category: 'animals', level: 'beginner' },
+    { title: 'Apple', image: 'apple.jpg', category: 'fruits', level: 'beginner' },
+    { title: 'Table', image: 'table.jpg', category: 'objects', level: 'beginner' },
+];
+
     return mockWords.filter(word => word.category === category && word.level === level);
 }
 
@@ -199,43 +200,50 @@ function updateProgressDisplay() {
     const progressContainer = progressSection.querySelector('div') || document.createElement('div');
     progressSection.appendChild(progressContainer);
 
-    // Display progress with levels and total words for each category
+    // Define a helper function to calculate the total words for a category
+    const getTotalWords = (category) => (
+        progressData[category].beginner +
+        progressData[category].intermediate +
+        progressData[category].advanced
+    );
+
     progressContainer.innerHTML = `
         <div class="progress-category">
             <h3>Animals</h3>
             <div class="progress-levels">
-                <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.animals.beginner * 100 / 10}%, lightgray 0%);"></div>
-                <span>Beginner: ${progressData.animals.beginner}/10</span>
-                <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.animals.intermediate * 100 / 10}%, lightgray 0%);"></div>
-                <span>Intermediate: ${progressData.animals.intermediate}/10</span>
-                <div class="circle" style="background: conic-gradient(#f44336 ${progressData.animals.advanced * 100 / 10}%, lightgray 0%);"></div>
-                <span>Advanced: ${progressData.animals.advanced}/10</span>
+                <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.animals.beginner * 100 / getTotalWords('animals')}%, lightgray 0%);"></div>
+                <span>Beginner: ${progressData.animals.beginner}/${getTotalWords('animals')}</span>
+                <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.animals.intermediate * 100 / getTotalWords('animals')}%, lightgray 0%);"></div>
+                <span>Intermediate: ${progressData.animals.intermediate}/${getTotalWords('animals')}</span>
+                <div class="circle" style="background: conic-gradient(#f44336 ${progressData.animals.advanced * 100 / getTotalWords('animals')}%, lightgray 0%);"></div>
+                <span>Advanced: ${progressData.animals.advanced}/${getTotalWords('animals')}</span>
             </div>
-            <p>Total Words: ${progressData.animals.beginner + progressData.animals.intermediate + progressData.animals.advanced}</p> <!-- Added total words -->
+            <p>Total Words: ${getTotalWords('animals')}</p>
         </div>
         <div class="progress-category">
             <h3>Fruits</h3>
             <div class="progress-levels">
-                <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.fruits.beginner * 100 / 10}%, lightgray 0%);"></div>
-                <span>Beginner: ${progressData.fruits.beginner}/10</span>
-                <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.fruits.intermediate * 100 / 10}%, lightgray 0%);"></div>
-                <span>Intermediate: ${progressData.fruits.intermediate}/10</span>
-                <div class="circle" style="background: conic-gradient(#f44336 ${progressData.fruits.advanced * 100 / 10}%, lightgray 0%);"></div>
-                <span>Advanced: ${progressData.fruits.advanced}/10</span>
+                <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.fruits.beginner * 100 / getTotalWords('fruits')}%, lightgray 0%);"></div>
+                <span>Beginner: ${progressData.fruits.beginner}/${getTotalWords('fruits')}</span>
+                <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.fruits.intermediate * 100 / getTotalWords('fruits')}%, lightgray 0%);"></div>
+                <span>Intermediate: ${progressData.fruits.intermediate}/${getTotalWords('fruits')}</span>
+                <div class="circle" style="background: conic-gradient(#f44336 ${progressData.fruits.advanced * 100 / getTotalWords('fruits')}%, lightgray 0%);"></div>
+                <span>Advanced: ${progressData.fruits.advanced}/${getTotalWords('fruits')}</span>
             </div>
-            <p>Total Words: ${progressData.fruits.beginner + progressData.fruits.intermediate + progressData.fruits.advanced}</p> <!-- Added total words -->
+            <p>Total Words: ${getTotalWords('fruits')}</p>
         </div>
         <div class="progress-category">
             <h3>Objects</h3>
             <div class="progress-levels">
-                <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.objects.beginner * 100 / 10}%, lightgray 0%);"></div>
-                <span>Beginner: ${progressData.objects.beginner}/10</span>
-                <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.objects.intermediate * 100 / 10}%, lightgray 0%);"></div>
-                <span>Intermediate: ${progressData.objects.intermediate}/10</span>
-                <div class="circle" style="background: conic-gradient(#f44336 ${progressData.objects.advanced * 100 / 10}%, lightgray 0%);"></div>
-                <span>Advanced: ${progressData.objects.advanced}/10</span>
+                <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.objects.beginner * 100 / getTotalWords('objects')}%, lightgray 0%);"></div>
+                <span>Beginner: ${progressData.objects.beginner}/${getTotalWords('objects')}</span>
+                <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.objects.intermediate * 100 / getTotalWords('objects')}%, lightgray 0%);"></div>
+                <span>Intermediate: ${progressData.objects.intermediate}/${getTotalWords('objects')}</span>
+                <div class="circle" style="background: conic-gradient(#f44336 ${progressData.objects.advanced * 100 / getTotalWords('objects')}%, lightgray 0%);"></div>
+                <span>Advanced: ${progressData.objects.advanced}/${getTotalWords('objects')}</span>
             </div>
-            <p>Total Words: ${progressData.objects.beginner + progressData.objects.intermediate + progressData.objects.advanced}</p> <!-- Added total words -->
+            <p>Total Words: ${getTotalWords('objects')}</p>
         </div>
     `;
 }
+

@@ -1,100 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Words with Pictures</title>
-    <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script> <!-- Link to the external JavaScript -->
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Learn Words with Pictures</title>
+        <link rel="stylesheet" href="styles.css">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
-<body>
-    <header>
-        <h1>Learn Words with Pictures</h1>
-    </header>
+        <script defer src="script.js"></script> <!-- Link to the external JavaScript -->
+    </head>
 
-    <section id="selection">
-        <h2>Select Category and Level</h2>
+    <body>
+        <header>
+            <h1>Learn Words with Pictures</h1>
+        </header>
+
+        <section id="selection">
+            <h2>Select Category and Level</h2>
+            <form>
+                <label for="category">Category:</label>
+                <select id="category">
+                    <option value="" selected disabled>Not selected</option>
+                    <option value="animals">Animals</option>
+                    <option value="objects">Objects</option>
+                    <option value="fruits">Fruits</option>
+                </select>
+
+                <label for="level">Level:</label>
+                <select id="level">
+                    <option value="" selected disabled>Not selected</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+
+                <button type="button" id="start-btn">Start Learning</button>
+            </form>
+        </section>
+
+        <section id="search">
+            <h2>Search Words</h2>
+            <input type="text" id="search-bar" placeholder="Search by title, category, or level">
+        </section>
+
+    <section id="words">
+        <h2>Words List</h2>
+        <ul id="word-list">
+        </ul>
+        <div id="pagination-controls">
+        </div>
+    </section>
+
+
+    <section id="add-word">
+        <h2>Add New Word</h2>
         <form>
-            <label for="category">Category:</label>
-            <select id="category">
+            <label for="word-title">Word:</label>
+            <input type="text" id="word-title" placeholder="Enter the word" required>
+
+            <label for="word-category">Category:</label>
+            <select id="word-category" required>
                 <option value="" selected disabled>Not selected</option>
                 <option value="animals">Animals</option>
                 <option value="objects">Objects</option>
                 <option value="fruits">Fruits</option>
             </select>
 
-            <label for="level">Level:</label>
-            <select id="level">
+            <label for="word-level">Level:</label>
+            <select id="word-level" required>
                 <option value="" selected disabled>Not selected</option>
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
             </select>
 
-            <button type="button" id="start-btn">Start Learning</button>
+            <label for="word-image">Image:</label>
+            <input type="file" id="word-image" accept="image/*" required>
+            <div id="image-preview" style="margin-top: 10px;">
+                <p>No image selected</p>
+            </div>
+
+            <button type="button" id="add-word-btn">Add Word</button>
         </form>
     </section>
 
-    <section id="search">
-        <h2>Search Words</h2>
-        <input type="text" id="search-bar" placeholder="Search by title, category, or level">
+    <section id="progress">
+        <h2>Progress Report</h2>
+        <div></div> 
     </section>
 
-<section id="words">
-    <h2>Words List</h2>
-    <ul id="word-list">
-        <!-- Dynamic word list will be inserted here -->
-    </ul>
-    <div id="pagination-controls">
-        <!-- Pagination buttons will be dynamically created here -->
-    </div>
-</section>
 
+        <section id="sound-control">
+            <h2>Sound</h2>
+            <button id="sound-btn">🔊</button> <!-- Sound icon toggle -->
+        </section>
+    </body>
 
-<section id="add-word">
-    <h2>Add New Word</h2>
-    <form>
-        <label for="word-title">Word:</label>
-        <input type="text" id="word-title" placeholder="Enter the word" required>
-
-        <label for="word-category">Category:</label>
-        <select id="word-category" required>
-            <option value="" selected disabled>Not selected</option>
-            <option value="animals">Animals</option>
-            <option value="objects">Objects</option>
-            <option value="fruits">Fruits</option>
-        </select>
-
-        <label for="word-level">Level:</label>
-        <select id="word-level" required>
-            <option value="" selected disabled>Not selected</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-        </select>
-
-        <label for="word-image">Image:</label>
-        <input type="file" id="word-image" accept="image/*" required>
-        <div id="image-preview" style="margin-top: 10px;">
-            <p>No image selected</p>
-        </div>
-
-        <button type="button" id="add-word-btn">Add Word</button>
-    </form>
-</section>
-
-<section id="progress">
-    <h2>Progress Report</h2>
-    <div></div> <!-- Dynamic content will be inserted here -->
-</section>
-
-
-    <section id="sound-control">
-        <h2>Sound</h2>
-        <button id="sound-btn">🔊</button> <!-- Sound icon toggle -->
-    </section>
-</body>
-
-</html>
+    </html>
