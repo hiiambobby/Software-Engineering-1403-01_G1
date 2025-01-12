@@ -1,13 +1,17 @@
 // Mock function simulating backend response
 function loadWordsFromBackend(category, level) {
-const mockWords = [
-    { title: 'Cat', image: 'yellowblackbear.jpeg', category: 'animals', level: 'beginner' },
-    { title: 'Dog', image: 'dog.png', category: 'animals', level: 'beginner' },
-    { title: 'Apple', image: 'apple.jpg', category: 'fruits', level: 'beginner' },
-    { title: 'Table', image: 'table.jpg', category: 'objects', level: 'beginner' },
-];
+    const mockWords = [
+        { title: 'Cat', image: 'yellowblackbear.jpeg', category: 'animals', level: 'beginner' },
+        { title: 'Dog', image: 'dog.png', category: 'animals', level: 'beginner' },
+        { title: 'Apple', image: 'apple.jpg', category: 'fruits', level: 'beginner' },
+        { title: 'Table', image: 'table.jpg', category: 'objects', level: 'beginner' },
+    ];
 
-    return mockWords.filter(word => word.category === category && word.level === level);
+    // Filter words based on selected category and level
+    return mockWords.filter(word => 
+        (category ? word.category === category : true) &&
+        (level ? word.level === level : true)
+    );
 }
 
 // Initialize variables
@@ -16,21 +20,9 @@ let allWords = [];
 
 // Track progress
 let progressData = {
-    animals: {
-        beginner: 0,
-        intermediate: 0,
-        advanced: 0,
-    },
-    fruits: {
-        beginner: 0,
-        intermediate: 0,
-        advanced: 0,
-    },
-    objects: {
-        beginner: 0,
-        intermediate: 0,
-        advanced: 0,
-    },
+    animals: { beginner: 0, intermediate: 0, advanced: 0 },
+    fruits: { beginner: 0, intermediate: 0, advanced: 0 },
+    objects: { beginner: 0, intermediate: 0, advanced: 0 },
 };
 let totalWordsLearned = 0; // To track total words learned
 
@@ -44,14 +36,23 @@ soundBtn.addEventListener('click', () => {
 
 // Search functionality
 const searchBar = document.getElementById('search-bar');
+const categorySelect = document.getElementById('category');
+const levelSelect = document.getElementById('level');
+
 searchBar.addEventListener('input', () => {
     const searchText = searchBar.value.toLowerCase();
-    const filteredWords = allWords.filter(word =>
-        word.title.toLowerCase().includes(searchText) ||
-        word.category.toLowerCase().includes(searchText) ||
-        word.level.toLowerCase().includes(searchText)
-    );
-    currentPage = 0; // Reset to the first page
+    const category = categorySelect.value;
+    const level = levelSelect.value;
+
+    // Filter words based on search input and selected category/level
+    const filteredWords = allWords.filter(word => {
+        return (word.title.toLowerCase().includes(searchText) ||
+            word.category.toLowerCase().includes(searchText) ||
+            word.level.toLowerCase().includes(searchText));
+    });
+
+    // Update display with filtered words
+    currentPage = 0;
     updateWordDisplay(filteredWords);
 });
 
@@ -66,9 +67,13 @@ function updateWordDisplay(words = allWords) {
         return;
     }
 
-    // Display only the current word
+    // Ensure currentPage is within bounds
+    if (currentPage >= words.length) {
+        currentPage = words.length - 1;
+    }
+
     const word = words[currentPage];
-    wordList.innerHTML = `    
+    wordList.innerHTML = `
         <li>
             <h3>${word.title}</h3>
             <img src="${word.image}" alt="${word.title}">
@@ -82,29 +87,18 @@ function updateWordDisplay(words = allWords) {
     const learnedBtn = wordList.querySelector('.learned-btn');
     learnedBtn.addEventListener('click', () => {
         learnedBtn.disabled = true;
-
-        // Save the progress data when the word is marked as known
-        const currentWord = allWords[currentPage];
+        const currentWord = words[currentPage];
         progressData[currentWord.category][currentWord.level] += 1;
         totalWordsLearned += 1;
-
-        // Hide the word from the list
         wordList.querySelector('li').style.display = 'none';
-
-        // Update the progress display
         updateProgressDisplay();
-
-        if (isSoundOn) {
-            alert('Sound: You learned the word!');
-        }
+        if (isSoundOn) alert('Sound: You learned the word!');
     });
 
     // 'I don't remember' button functionality
     const dontRememberBtn = wordList.querySelector('.dont-remember-btn');
     dontRememberBtn.addEventListener('click', () => {
-        if (isSoundOn) {
-            alert('فدای سرت');
-        }
+        if (isSoundOn) alert('فدای سرت');
     });
 
     // 'Favorite' button functionality
@@ -135,8 +129,8 @@ function updateWordDisplay(words = allWords) {
 
 // Start button functionality
 document.getElementById('start-btn').addEventListener('click', () => {
-    const category = document.getElementById('category').value;
-    const level = document.getElementById('level').value;
+    const category = categorySelect.value;
+    const level = levelSelect.value;
     if (category && level) {
         const words = loadWordsFromBackend(category, level);
         allWords = words;
@@ -200,7 +194,6 @@ function updateProgressDisplay() {
     const progressContainer = progressSection.querySelector('div') || document.createElement('div');
     progressSection.appendChild(progressContainer);
 
-    // Define a helper function to calculate the total words for a category
     const getTotalWords = (category) => (
         progressData[category].beginner +
         progressData[category].intermediate +
@@ -245,5 +238,9 @@ function updateProgressDisplay() {
             <p>Total Words: ${getTotalWords('objects')}</p>
         </div>
     `;
+
+    // Update the total progress count
+    const totalWordsLearnedElement = document.getElementById('total-words-learned');
+    totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
 }
 
