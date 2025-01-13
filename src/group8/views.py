@@ -35,7 +35,7 @@ def Signup8Page(request):
        
         try:
             # Create the user via Django's ORM
-            my_user = User.objects.create_user(username=uname, email=email, password=pass1)
+            my_user = User.objects.create_user(username=uname, email=email, password=pass1,is_active = True)
            
             # Create UserProfile to store name and age
             user_profile = UserProfile.objects.create(
@@ -62,16 +62,20 @@ def Signup8Page(request):
 
 
 def Login8Page(request):
+    print("salam..............................................")
     if request.method == 'POST':
         username = request.POST.get('username')
-        pass1 = request.POST.get('password')
-        # user = authenticate(request, username=username, password=pass1)
-        # if user is not None:
-        #     login(request, user)
-        #     return redirect('home')  # or any other page
-        # else:
-        #     return HttpResponse("Username or Password is incorrect!!!")
-        return redirect('group8:home')   
+        pass1 = request.POST.get('pass')
+        print(username)
+        print(pass1)
+        user = authenticate(request, username=username, password=pass1)
+        print("sossssssss")
+        if user is not None:
+            login(request, user)
+            return redirect('group8:home')  # or any other page
+        else:
+            print(user)
+            return HttpResponse(f"Username or Password is incorrect!!!{user}") 
     elif request.method == "GET":
         return render(request, 'login8.html')
 

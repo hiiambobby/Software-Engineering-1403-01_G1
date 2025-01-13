@@ -1,7 +1,7 @@
 // Mock function simulating backend response
 async function loadWordsFromBackend(category, level) {
   try {
-    const response = await fetch(`/get-words-by-category-level/?category=${category}&level=${level}`, {
+    const response = await fetch(`/get-words-by-category-level/?category=${encodeURIComponent(category)}&level=${encodeURIComponent(level)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -57,7 +57,11 @@ async function searchWords(searchText, category = null) {
     url += `&category=${encodeURIComponent(category)}`;
   }
   try {
-    const response = await fetch(url);
+    const encodedUrl = `/search-word/?title=${encodeURIComponent(searchText)}`;
+    if (category) {
+        encodedUrl += `&category=${encodeURIComponent(category)}`;
+    }
+    const response = await fetch(encodedUrl);
     const data = await response.json();
     return data.words;  // array of words from the server
   } catch (error) {
@@ -74,53 +78,46 @@ function updateWordDisplay(words = allWords) {
     if (words.length === 0) {
         wordList.innerHTML = '<p>No words to display.</p>';
         paginationControls.innerHTML = '';
-        return;
+        return; // Add return to exit the function if no words are available
     }
 
     // Ensure currentPage is within bounds
     if (currentPage >= words.length) {
         currentPage = words.length - 1;
+    } else if (currentPage < 0) {
+        currentPage = 0;
     }
 
     const word = words[currentPage];
     wordList.innerHTML = `
         <li>
             <h3>${word.title}</h3>
-            <img src="${word.image}" alt="${word.title}" style="max-width: 100px; max-height: 100px;">
+            <img src="${word.image}" alt="${word.title}">
             <button class="learned-btn">I know this word!</button>
             <button class="dont-remember-btn">I don't remember</button>
             <button class="favorite-btn">Like</button>
-            <button class="edit-btn">Edit</button>
-            <button class="delete-btn">Delete</button>
         </li>
     `;
 
     // 'I know this word' button functionality
-   const learnedBtn = wordList.querySelector('.learned-btn');
+    const learnedBtn = wordList.querySelector('.learned-btn');
     learnedBtn.addEventListener('click', () => {
-        fetch(`/mark-word-learned/${word.id}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                alert('Word marked as learned!');
-            } else {
-                alert('Failed to mark word as learned.');
-            }
-        })
-        .catch(err => console.error(err));
+        learnedBtn.disabled = true;
+        if (isSoundOn) {
+            const learnedSound = document.getElementById('learned-sound');
+            learnedSound.play();
+        }
     });
 
+    // 'I don't remember' button functionality
     const dontRememberBtn = wordList.querySelector('.dont-remember-btn');
     dontRememberBtn.addEventListener('click', () => {
-        if (isSoundOn) alert('Keep trying!');
+        if (isSoundOn) {
+            const dontRememberSound = document.getElementById('dont-remember-sound');
+            dontRememberSound.play();
+        }
     });
-    
+
     // 'Favorite' button functionality
     const favoriteBtn = wordList.querySelector('.favorite-btn');
     favoriteBtn.addEventListener('click', () => {
@@ -128,48 +125,33 @@ function updateWordDisplay(words = allWords) {
         favoriteBtn.disabled = true;
     });
 
-    // 'Edit' button functionality
-    const editBtn = wordList.querySelector('.edit-btn');
-    editBtn.addEventListener('click', () => {
-        const newTitle = prompt("Enter the new title:", word.title);
-        const newCategory = prompt("Enter the new category:", word.category);
-        const newLevel = prompt("Enter the new level:", word.level);
-
-        if (newTitle && newCategory && newLevel) {
-            editWord(word.id, newTitle, newCategory, newLevel, word.image);
-            words[currentPage] = { ...word, title: newTitle, category: newCategory, level: newLevel };
-            updateWordDisplay(words);
-        }
-    });
-
-    // 'Delete' button functionality
-    const deleteBtn = wordList.querySelector('.delete-btn');
-    deleteBtn.addEventListener('click', async () => {
-        if (confirm('Are you sure you want to delete this word?')) {
-            await deleteWord(word.id);
-            words.splice(currentPage, 1);
-            currentPage = Math.max(currentPage - 1, 0);
-            updateWordDisplay(words);
-        }
-    });
-
     // Update pagination controls
     paginationControls.innerHTML = `
-        <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''}>Previous</button>
-        <span>Word ${currentPage + 1} of ${words.length}</span>
-        <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''}>Next</button>
+        <button ${currentPage === 0 ? 'disabled' : ''} id="prev-btn">Previous</button>
+        <button ${currentPage === words.length - 1 ? 'disabled' : ''} id="next-btn">Next</button>
     `;
 
-    // Add event listeners for pagination buttons
-    document.getElementById('prev-btn').addEventListener('click', () => {
-        currentPage--;
-        updateWordDisplay(words);
-    });
+    // Pagination button functionality
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
 
-    document.getElementById('next-btn').addEventListener('click', () => {
-        currentPage++;
-        updateWordDisplay(words);
-    });
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                updateWordDisplay(words);
+            }
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < words.length - 1) {
+                currentPage++;
+                updateWordDisplay(words);
+            }
+        });
+    }
 }
 
 // Start button functionality
@@ -431,5 +413,3 @@ document.getElementById('show-progress-btn').addEventListener('click', async () 
 //     const totalWordsLearnedElement = document.getElementById('total-words-learned');
 //     totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
 // }
-
-
