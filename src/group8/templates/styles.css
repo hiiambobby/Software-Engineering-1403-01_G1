@@ -45,14 +45,12 @@ body {
 #search-container {
     position: relative;
     max-width: 600px;
-    /* Match input max-width */
     margin: 1.5rem auto;
     display: flex;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 25px;
-    /* Rounded edges */
     padding: 0.5rem 1rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
@@ -63,13 +61,11 @@ body {
     font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.6);
     pointer-events: none;
-    /* Prevent interaction with the icon */
 }
 
 #search-bar {
     width: 100%;
     padding: 0.8rem 1.2rem 0.8rem 3rem;
-    /* Add left padding to accommodate icon */
     border: none;
     border-radius: 25px;
     font-size: 1rem;
@@ -84,16 +80,11 @@ body {
     box-shadow: 0 0 10px #ff512f, 0 0 40px rgba(255, 81, 47, 0.5);
 }
 
-#search-bar::placeholder {
+::placeholder {
     color: rgba(255, 255, 255, 0.6);
     font-style: italic;
     font-size: 0.9rem;
 }
-
-::placeholder {
-    color: #e5e5e5;
-}
-
 header {
     background-color: #121826;
     color: #ffffff;
@@ -102,6 +93,45 @@ header {
     font-size: 1.8rem;
     font-weight: 600;
     border-bottom: 2px solid #ff512f;
+}
+#header-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+
+#header-title {
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+}
+
+#sound-btn {
+    position: absolute;
+
+    right: 1rem;
+  
+    top: 50%;
+    transform: translateY(-50%);
+   
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+#sound-btn:hover {
+    transform: scale(1.2);
+    opacity: 0.8;
 }
 
 section {
@@ -259,7 +289,6 @@ img:hover {
 
 .progress-category {
     margin-bottom: 2rem;
-    /* Increase spacing between categories */
     text-align: center;
 }
 
@@ -267,19 +296,13 @@ img:hover {
     font-size: 1.6rem;
     font-weight: 700;
     color: #ffa500;
-    /* Orange color */
     text-transform: uppercase;
-    /* Make it bold and uppercase */
     margin-bottom: 1rem;
-    /* Space between title and the circles */
     padding: 0.5rem 1rem;
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.1);
-    /* Slight background for separation */
     border: 2px solid #ff512f;
-    /* Orange border */
     font-family: 'Arial', sans-serif;
-    /* Change the font to Arial */
     position: relative;
 }
 
@@ -287,13 +310,10 @@ img:hover {
     content: "";
     position: absolute;
     bottom: -8px;
-    /* Position it just below the text */
     left: 0;
     width: 100%;
     height: 2px;
-    /* Line thickness */
     background-color: #ffa500;
-    /* Orange color */
 }
 .circle {
     width: 60px;

@@ -86,46 +86,71 @@ function updateWordDisplay(words = allWords) {
     wordList.innerHTML = `
         <li>
             <h3>${word.title}</h3>
-            <img src="${word.image}" alt="${word.title}">
+            <img src="${word.image}" alt="${word.title}" style="max-width: 100px; max-height: 100px;">
             <button class="learned-btn">I know this word!</button>
             <button class="dont-remember-btn">I don't remember</button>
             <button class="favorite-btn">Like</button>
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
         </li>
     `;
 
     // 'I know this word' button functionality
-learnedBtn.addEventListener('click', () => {
-  const currentWord = allWords[currentPage];
-  fetch(`/mark-word-learned/${currentWord.id}/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken') // if CSRF is enabled
-    }
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.message) {
-        console.log("Word marked as learned:", data.message);
-        // Optionally update UI or remove this word from the display
-      } else {
-        console.error("Error marking word as learned:", data.error);
-      }
-    })
-    .catch(err => console.error("Fetch error:", err));
-});
-
-    // 'I don't remember' button functionality
-    const dontRememberBtn = wordList.querySelector('.dont-remember-btn');
-    dontRememberBtn.addEventListener('click', () => {
-        if (isSoundOn) alert('فدای سرت');
+   const learnedBtn = wordList.querySelector('.learned-btn');
+    learnedBtn.addEventListener('click', () => {
+        fetch(`/mark-word-learned/${word.id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Word marked as learned!');
+            } else {
+                alert('Failed to mark word as learned.');
+            }
+        })
+        .catch(err => console.error(err));
     });
 
+    const dontRememberBtn = wordList.querySelector('.dont-remember-btn');
+    dontRememberBtn.addEventListener('click', () => {
+        if (isSoundOn) alert('Keep trying!');
+    });
+    
     // 'Favorite' button functionality
     const favoriteBtn = wordList.querySelector('.favorite-btn');
     favoriteBtn.addEventListener('click', () => {
         favoriteBtn.textContent = 'Liked';
         favoriteBtn.disabled = true;
+    });
+
+    // 'Edit' button functionality
+    const editBtn = wordList.querySelector('.edit-btn');
+    editBtn.addEventListener('click', () => {
+        const newTitle = prompt("Enter the new title:", word.title);
+        const newCategory = prompt("Enter the new category:", word.category);
+        const newLevel = prompt("Enter the new level:", word.level);
+
+        if (newTitle && newCategory && newLevel) {
+            editWord(word.id, newTitle, newCategory, newLevel, word.image);
+            words[currentPage] = { ...word, title: newTitle, category: newCategory, level: newLevel };
+            updateWordDisplay(words);
+        }
+    });
+
+    // 'Delete' button functionality
+    const deleteBtn = wordList.querySelector('.delete-btn');
+    deleteBtn.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to delete this word?')) {
+            await deleteWord(word.id);
+            words.splice(currentPage, 1);
+            currentPage = Math.max(currentPage - 1, 0);
+            updateWordDisplay(words);
+        }
     });
 
     // Update pagination controls
@@ -306,16 +331,51 @@ async function fetchProgressReport() {
 }
 
 document.getElementById('show-progress-btn').addEventListener('click', async () => {
-  const progress = await fetchProgressReport();
-  if (progress) {
-    // progress.total_words_learned
-    // progress.progress_by_category  (e.g. {"Fruit": 2, "Vegetable": 3} )
-    // progress.progress_by_level    (e.g. {"Beginner": 4, "Intermediate": 1} )
-    // Now pass this data to your updateProgressDisplay() or similar function
-    updateProgressDisplayServerData(progress);
-  }
- });
- 
+    const progress = await fetchProgressReport();
+
+    if (progress) {
+        updateProgressDisplay(progress); // Update the display with the fetched progress
+    } else {
+        alert('Failed to fetch progress report. Please try again later.');
+    }
+});
+
+ function updateProgressDisplay(progress) {
+    const progressSection = document.getElementById('progress');
+    progressSection.innerHTML = ''; // Clear previous content
+
+    const totalWordsLearned = progress.total_words_learned || 0;
+    const progressByCategory = progress.progress_by_category || {};
+    const progressByLevel = progress.progress_by_level || {};
+
+    // Display total words learned
+    const totalWordsLearnedElement = document.createElement('h3');
+    totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
+    progressSection.appendChild(totalWordsLearnedElement);
+
+    // Create progress for each category
+    for (const [category, count] of Object.entries(progressByCategory)) {
+        const categoryElement = document.createElement('div');
+        categoryElement.className = 'progress-category';
+        categoryElement.innerHTML = `
+            <h4>${category}</h4>
+            <p>Words Learned: ${count}</p>
+        `;
+        progressSection.appendChild(categoryElement);
+    }
+
+    // Create progress for each level
+    for (const [level, count] of Object.entries(progressByLevel)) {
+        const levelElement = document.createElement('div');
+        levelElement.className = 'progress-level';
+        levelElement.innerHTML = `
+            <h4>${level}</h4>
+            <p>Words Learned: ${count}</p>
+        `;
+        progressSection.appendChild(levelElement);
+    }
+}
+
 // // Function to update the progress display
 // function updateProgressDisplay() {
 //     const progressSection = document.getElementById('progress');
