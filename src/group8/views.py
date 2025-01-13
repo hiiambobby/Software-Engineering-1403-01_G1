@@ -42,14 +42,14 @@ def Signup8Page(request):
                 name=name,
                 age=age if age else None
             )
-            # (Optional) You could also do:
-            # user_profile.name = name
-            # user_profile.age = age
-            # user_profile.save()
+            # (Optional) :
+            user_profile.name = name
+            user_profile.age = age
+            user_profile.save()
 
             # Automatically log the user in if desired:
             login(request, my_user)
-            return redirect('group8:home')  # or wherever you want to redirect after signup
+            return redirect('group8:home')  
 
         except IntegrityError:
             return HttpResponse("An error occurred while creating your account. Please try again.")
@@ -68,10 +68,9 @@ def Login8Page(request):
         print(username)
         print(pass1)
         user = authenticate(request, username=username, password=pass1)
-        print("sossssssss")
         if user is not None:
             login(request, user)
-            return redirect('group8:home')  # or any other page
+            return redirect('group8:home')  
         else:
             print(user)
             return HttpResponse(f"Username or Password is incorrect!!!{user}") 
@@ -81,7 +80,7 @@ def Login8Page(request):
 
 def Logout8Page(request):
     logout(request)
-    return redirect('group8:login8')  # redirect to login after logout
+    return redirect('group8:login8')  
 
 
 @login_required
@@ -137,7 +136,7 @@ def add_word_view(request):
             return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-
+#inam mesle paiini
 @csrf_exempt
 def delete_word_view(request, word_id):
     if request.method == "DELETE":
@@ -147,7 +146,7 @@ def delete_word_view(request, word_id):
         return JsonResponse({"error": "Failed to delete word."}, status=404)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-
+#in bayad edit beshe va peygham biad ke darkhast shoma ersal gardid baad admin ae khast bere tu jadvale darkhasta negah kone va khodesh dasti pak kone ya hich kar nakone
 @csrf_exempt
 def edit_word_view(request, word_id):
     if request.method == "PUT":
@@ -167,7 +166,7 @@ def edit_word_view(request, word_id):
             return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-
+#in bayad edit beshe va tabe betune ba faghat ya category ya level ham filter kone va kalamato bargardune
 @csrf_exempt
 def get_words_by_category_level_view(request):
     if request.method == "GET":

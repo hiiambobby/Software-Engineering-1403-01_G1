@@ -1,20 +1,26 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
+    {% load static %}
     <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Learn Words with Pictures</title>
-        <link rel="stylesheet" href="styles.css">
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Words with Pictures</title>
 
-        <script defer src="script.js"></script> <!-- Link to the external JavaScript -->
-    </head>
+    <link rel="stylesheet" href="{% static 'group8/styles.css' %}">
 
-    <body>
-        <header>
-            <h1>Learn Words with Pictures</h1>
-        </header>
+    <link rel="shortcut icon" href="{% static 'group8/favicon.png' %}" type="image/png">
+
+    <script defer src="{% static 'group8/script.js' %}"></script> <!-- Link to the external JavaScript -->
+</head>
+<body>
+<header>
+    <div id="header-container">
+        <h1>Learn Words with Pictures</h1>
+        <button id="sound-btn" aria-label="Toggle Sound">🔊</button>
+    </div>
+</header>
+
 
         <section id="selection">
             <h2>Select Category and Level</h2>
@@ -95,10 +101,6 @@
     </section>
 
 
-        <section id="sound-control">
-            <h2>Sound</h2>
-            <button id="sound-btn">🔊</button> <!-- Sound icon toggle -->
-        </section>
     </body>
 
     </html>
