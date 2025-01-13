@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from django.db.models import Count
@@ -8,11 +9,75 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import json
 from .services import WordService
-from .models import Word, UserProgress
-from registration.models import UserProfile
+from .models import Word, UserProgress, UserProfile
+
 
 def home(request):
     return render(request, 'group8.html', {'group_number': '8'})
+
+def Signup8Page(request):
+    if request.method == 'POST':
+        uname = request.POST.get('username')
+        email = request.POST.get('email')
+        pass1 = request.POST.get('password1')
+        pass2 = request.POST.get('password2')
+        name = request.POST.get('name')  # extra field from the form
+        age = request.POST.get('age')    # extra field from the form
+
+        if pass1 != pass2:
+            return HttpResponse("Your password and confirm password do not match!")
+       
+        # Check if username is taken
+        if User.objects.filter(username=uname).exists():
+            return HttpResponse("This username is already taken. Please choose another one.")
+        
+       
+        try:
+            # Create the user via Django's ORM
+            my_user = User.objects.create_user(username=uname, email=email, password=pass1)
+           
+            # Create UserProfile to store name and age
+            user_profile = UserProfile.objects.create(
+                user=my_user,
+                name=name,
+                age=age if age else None
+            )
+            # (Optional) You could also do:
+            # user_profile.name = name
+            # user_profile.age = age
+            # user_profile.save()
+
+            # Automatically log the user in if desired:
+            login(request, my_user)
+            return redirect('group8:home')  # or wherever you want to redirect after signup
+
+        except IntegrityError:
+            return HttpResponse("An error occurred while creating your account. Please try again.")
+        
+    elif request.method == "GET":
+        return render(request, 'signup8.html')    
+   
+    return render(request, 'signup8.html')
+
+
+def Login8Page(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        pass1 = request.POST.get('password')
+        # user = authenticate(request, username=username, password=pass1)
+        # if user is not None:
+        #     login(request, user)
+        #     return redirect('home')  # or any other page
+        # else:
+        #     return HttpResponse("Username or Password is incorrect!!!")
+        return redirect('group8:home')   
+    elif request.method == "GET":
+        return render(request, 'login8.html')
+
+
+def Logout8Page(request):
+    logout(request)
+    return redirect('group8:login8')  # redirect to login after logout
 
 
 @login_required
