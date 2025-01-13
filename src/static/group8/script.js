@@ -82,19 +82,20 @@ function updateWordDisplay(words = allWords) {
         currentPage = words.length - 1;
     }
 
-    const word = words[currentPage];
-    wordList.innerHTML = `
-        <li>
-            <h3>${word.title}</h3>
-            <img src="${word.image}" alt="${word.title}" style="max-width: 100px; max-height: 100px;">
+  const word = words[currentPage];
+wordList.innerHTML = `
+    <li class="word-item">
+        <h3>${word.title}</h3>
+        <img src="${word.image}" alt="${word.title}" class="word-image">
+        <div class="button-container">
             <button class="learned-btn">I know this word!</button>
             <button class="dont-remember-btn">I don't remember</button>
             <button class="favorite-btn">Like</button>
             <button class="edit-btn">Edit</button>
             <button class="delete-btn">Delete</button>
-        </li>
-    `;
-
+        </div>
+    </li>
+`;
     // 'I know this word' button functionality
    const learnedBtn = wordList.querySelector('.learned-btn');
     learnedBtn.addEventListener('click', () => {
@@ -187,58 +188,6 @@ document.getElementById('start-btn').addEventListener('click', async () => {
 });
 
 
-// Add new word functionality
-document.getElementById('add-word-btn').addEventListener('click', async () => {
-  const title = document.getElementById('word-title').value;
-  const category = document.getElementById('word-category').value;
-  const level = document.getElementById('word-level').value;
-  const fileInput = document.getElementById('word-image');
-  const file = fileInput.files[0];
-
-  if (title && category && level && file) {
-    // Convert the file to a Base64 data URL
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        console.log('File read successfully:', e.target.result); // Check Base64 data
-
-      const imageDataURL = e.target.result;
-
-      // Prepare the payload
-      const payload = {
-        title: title,
-        category: category,
-        level: level,
-        image_url: imageDataURL,
-      };
-
-      try {
-        // Send the POST request
-        const response = await fetch('/group8/add-word/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          alert('New word added successfully!');
-          // Optionally update your UI
-        } else {
-          console.error('Add word error:', data.error);
-          alert('Failed to add word: ' + data.error);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-        console.log(file); // Check the file object
-
-      }
-    };
-    reader.readAsDataURL(file);
-  } else {
-    alert('Please fill out all fields and select an image to add a new word.');
-  }
-});
 
 ////delete words/////
 async function deleteWord(wordId) {
