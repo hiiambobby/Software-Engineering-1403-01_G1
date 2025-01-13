@@ -15,6 +15,7 @@ from .models import Word, UserProgress, UserProfile
 def home(request):
     return render(request, 'group8.html', {'group_number': '8'})
 
+
 def Signup8Page(request):
     if request.method == 'POST':
         uname = request.POST.get('username')
