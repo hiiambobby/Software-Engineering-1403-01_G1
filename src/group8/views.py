@@ -15,6 +15,13 @@ from .models import Word, UserProgress, UserProfile
 def home(request):
     return render(request, 'group8.html', {'group_number': '8'})
 
+#saba added this
+def add_word_page(request):
+    return render(request, 'add_word_page.html', {'group_number': '8'})
+    
+def progress(request):
+    return render(request, 'progress.html', {'group_number': '8'})
+
 
 def Signup8Page(request):
     if request.method == 'POST':

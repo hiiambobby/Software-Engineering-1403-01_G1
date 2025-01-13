@@ -1,7 +1,7 @@
 // Mock function simulating backend response
 async function loadWordsFromBackend(category, level) {
   try {
-    const response = await fetch(`/get-words-by-category-level/?category=${category}&level=${level}`, {
+    const response = await fetch(`/group8/get-words-by-category-level/?category=${category}&level=${level}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ searchBar.addEventListener('input', async () => {
   updateWordDisplay(words);
 });
 async function searchWords(searchText, category = null) {
-  let url = `/search-word/?title=${encodeURIComponent(searchText)}`;
+  let url = `/group8/search-word/?title=${encodeURIComponent(searchText)}`;
   if (category) {
     url += `&category=${encodeURIComponent(category)}`;
   }
@@ -98,7 +98,7 @@ function updateWordDisplay(words = allWords) {
     // 'I know this word' button functionality
    const learnedBtn = wordList.querySelector('.learned-btn');
     learnedBtn.addEventListener('click', () => {
-        fetch(`/mark-word-learned/${word.id}/`, {
+        fetch(`/group8/mark-word-learned/${word.id}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -186,6 +186,7 @@ document.getElementById('start-btn').addEventListener('click', async () => {
   }
 });
 
+
 // Add new word functionality
 document.getElementById('add-word-btn').addEventListener('click', async () => {
   const title = document.getElementById('word-title').value;
@@ -195,43 +196,42 @@ document.getElementById('add-word-btn').addEventListener('click', async () => {
   const file = fileInput.files[0];
 
   if (title && category && level && file) {
-    // Convert the file to a Base64 data URL (like you do now)
+    // Convert the file to a Base64 data URL
     const reader = new FileReader();
     reader.onload = async (e) => {
-      // e.target.result is a base64 string representing the image
+        console.log('File read successfully:', e.target.result); // Check Base64 data
+
       const imageDataURL = e.target.result;
 
-      // 1. Send data to the server
+      // Prepare the payload
       const payload = {
         title: title,
         category: category,
         level: level,
-        // On the server side, you might store the image differently.
-        // If your backend expects a regular URL, you must handle file uploads differently (multipart form data).
-        image_url: imageDataURL
+        image_url: imageDataURL,
       };
 
       try {
-        const response = await fetch('/add-word/', {
+        // Send the POST request
+        const response = await fetch('/group8/add-word/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
         const data = await response.json();
         if (response.ok) {
           alert('New word added successfully!');
-          // Optionally push the new word into allWords or re-fetch from the server
-          // allWords.push({ ...payload, id: data.word_id });
-          // updateWordDisplay(allWords);
+          // Optionally update your UI
         } else {
           console.error('Add word error:', data.error);
           alert('Failed to add word: ' + data.error);
         }
       } catch (error) {
         console.error('Fetch error:', error);
+        console.log(file); // Check the file object
+
       }
     };
     reader.readAsDataURL(file);
@@ -239,10 +239,11 @@ document.getElementById('add-word-btn').addEventListener('click', async () => {
     alert('Please fill out all fields and select an image to add a new word.');
   }
 });
+
 ////delete words/////
 async function deleteWord(wordId) {
   try {
-    const response = await fetch(`/delete-word/${wordId}/`, {
+    const response = await fetch(`/group8/delete-word/${wordId}/`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -264,7 +265,7 @@ async function deleteWord(wordId) {
 async function editWord(wordId, title, category, level, imageUrl) {
   const payload = { title, category, level, image_url: imageUrl };
   try {
-    const response = await fetch(`/edit-word/${wordId}/`, {
+    const response = await fetch(`/group8/edit-word/${wordId}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -308,9 +309,21 @@ wordImageInput.addEventListener('change', () => {
     }
 });
 
+
+
+document.getElementById('show-progress-btn').addEventListener('click', async () => {
+    const progress = await fetchProgressReport();
+
+    if (progress) {
+        updateProgressDisplay(progress); // Update the display with the fetched progress
+    } else {
+        alert('Failed to fetch progress report. Please try again later.');
+    }
+});
+
 async function fetchProgressReport() {
   try {
-    const response = await fetch('/get-progress-report/', {
+    const response = await fetch('/group8/get-progress-report/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -330,15 +343,7 @@ async function fetchProgressReport() {
   }
 }
 
-document.getElementById('show-progress-btn').addEventListener('click', async () => {
-    const progress = await fetchProgressReport();
 
-    if (progress) {
-        updateProgressDisplay(progress); // Update the display with the fetched progress
-    } else {
-        alert('Failed to fetch progress report. Please try again later.');
-    }
-});
 
  function updateProgressDisplay(progress) {
     const progressSection = document.getElementById('progress');
