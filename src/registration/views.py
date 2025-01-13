@@ -79,15 +79,14 @@ def LogoutPage(request):
 
 #         if pass1 != pass2:
 #             return HttpResponse("Your password and confirm password do not match!")
-       
 #         # Check if username is taken
 #         if User.objects.filter(username=uname).exists():
 #             return HttpResponse("This username is already taken. Please choose another one.")
-       
+
 #         try:
 #             # Create the user via Django's ORM
 #             my_user = User.objects.create_user(username=uname, email=email, password=pass1)
-           
+
 #             # Create UserProfile to store name and age
 #             user_profile = UserProfile.objects.create(
 #                 user=my_user,
@@ -105,7 +104,7 @@ def LogoutPage(request):
 
 #         except IntegrityError:
 #             return HttpResponse("An error occurred while creating your account. Please try again.")
-   
+
 #     return render(request, 'registration/signup.html')
 
 

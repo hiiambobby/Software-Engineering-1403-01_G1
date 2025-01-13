@@ -1,7 +1,7 @@
 // Mock function simulating backend response
 async function loadWordsFromBackend(category, level) {
   try {
-    const response = await fetch(`/get-words-by-category-level/?category=${category}&level=${level}`, {
+    const response = await fetch(`/group8/get-words-by-category-level/?category=${category}&level=${level}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ searchBar.addEventListener('input', async () => {
   updateWordDisplay(words);
 });
 async function searchWords(searchText, category = null) {
-  let url = `/search-word/?title=${encodeURIComponent(searchText)}`;
+  let url = `/group8/search-word/?title=${encodeURIComponent(searchText)}`;
   if (category) {
     url += `&category=${encodeURIComponent(category)}`;
   }
@@ -82,50 +82,76 @@ function updateWordDisplay(words = allWords) {
         currentPage = words.length - 1;
     }
 
-    const word = words[currentPage];
-    wordList.innerHTML = `
-        <li>
-            <h3>${word.title}</h3>
-            <img src="${word.image}" alt="${word.title}">
+  const word = words[currentPage];
+wordList.innerHTML = `
+    <li class="word-item">
+        <h3>${word.title}</h3>
+        <img src="${word.image}" alt="${word.title}" class="word-image">
+        <div class="button-container">
             <button class="learned-btn">I know this word!</button>
             <button class="dont-remember-btn">I don't remember</button>
             <button class="favorite-btn">Like</button>
-        </li>
-    `;
-
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
+        </div>
+    </li>
+`;
     // 'I know this word' button functionality
-learnedBtn.addEventListener('click', () => {
-  const currentWord = allWords[currentPage];
-  fetch(`/mark-word-learned/${currentWord.id}/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken') // if CSRF is enabled
-    }
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.message) {
-        console.log("Word marked as learned:", data.message);
-        // Optionally update UI or remove this word from the display
-      } else {
-        console.error("Error marking word as learned:", data.error);
-      }
-    })
-    .catch(err => console.error("Fetch error:", err));
-});
-
-    // 'I don't remember' button functionality
-    const dontRememberBtn = wordList.querySelector('.dont-remember-btn');
-    dontRememberBtn.addEventListener('click', () => {
-        if (isSoundOn) alert('فدای سرت');
+   const learnedBtn = wordList.querySelector('.learned-btn');
+    learnedBtn.addEventListener('click', () => {
+        fetch(`/group8/mark-word-learned/${word.id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Word marked as learned!');
+            } else {
+                alert('Failed to mark word as learned.');
+            }
+        })
+        .catch(err => console.error(err));
     });
 
+    const dontRememberBtn = wordList.querySelector('.dont-remember-btn');
+    dontRememberBtn.addEventListener('click', () => {
+        if (isSoundOn) alert('Keep trying!');
+    });
+    
     // 'Favorite' button functionality
     const favoriteBtn = wordList.querySelector('.favorite-btn');
     favoriteBtn.addEventListener('click', () => {
         favoriteBtn.textContent = 'Liked';
         favoriteBtn.disabled = true;
+    });
+
+    // 'Edit' button functionality
+    const editBtn = wordList.querySelector('.edit-btn');
+    editBtn.addEventListener('click', () => {
+        const newTitle = prompt("Enter the new title:", word.title);
+        const newCategory = prompt("Enter the new category:", word.category);
+        const newLevel = prompt("Enter the new level:", word.level);
+
+        if (newTitle && newCategory && newLevel) {
+            editWord(word.id, newTitle, newCategory, newLevel, word.image);
+            words[currentPage] = { ...word, title: newTitle, category: newCategory, level: newLevel };
+            updateWordDisplay(words);
+        }
+    });
+
+    // 'Delete' button functionality
+    const deleteBtn = wordList.querySelector('.delete-btn');
+    deleteBtn.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to delete this word?')) {
+            await deleteWord(word.id);
+            words.splice(currentPage, 1);
+            currentPage = Math.max(currentPage - 1, 0);
+            updateWordDisplay(words);
+        }
     });
 
     // Update pagination controls
@@ -161,63 +187,12 @@ document.getElementById('start-btn').addEventListener('click', async () => {
   }
 });
 
-// Add new word functionality
-document.getElementById('add-word-btn').addEventListener('click', async () => {
-  const title = document.getElementById('word-title').value;
-  const category = document.getElementById('word-category').value;
-  const level = document.getElementById('word-level').value;
-  const fileInput = document.getElementById('word-image');
-  const file = fileInput.files[0];
 
-  if (title && category && level && file) {
-    // Convert the file to a Base64 data URL (like you do now)
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      // e.target.result is a base64 string representing the image
-      const imageDataURL = e.target.result;
 
-      // 1. Send data to the server
-      const payload = {
-        title: title,
-        category: category,
-        level: level,
-        // On the server side, you might store the image differently.
-        // If your backend expects a regular URL, you must handle file uploads differently (multipart form data).
-        image_url: imageDataURL
-      };
-
-      try {
-        const response = await fetch('/add-word/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-          },
-          body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        if (response.ok) {
-          alert('New word added successfully!');
-          // Optionally push the new word into allWords or re-fetch from the server
-          // allWords.push({ ...payload, id: data.word_id });
-          // updateWordDisplay(allWords);
-        } else {
-          console.error('Add word error:', data.error);
-          alert('Failed to add word: ' + data.error);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-      }
-    };
-    reader.readAsDataURL(file);
-  } else {
-    alert('Please fill out all fields and select an image to add a new word.');
-  }
-});
 ////delete words/////
 async function deleteWord(wordId) {
   try {
-    const response = await fetch(`/delete-word/${wordId}/`, {
+    const response = await fetch(`/group8/delete-word/${wordId}/`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -239,7 +214,7 @@ async function deleteWord(wordId) {
 async function editWord(wordId, title, category, level, imageUrl) {
   const payload = { title, category, level, image_url: imageUrl };
   try {
-    const response = await fetch(`/edit-word/${wordId}/`, {
+    const response = await fetch(`/group8/edit-word/${wordId}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -283,9 +258,21 @@ wordImageInput.addEventListener('change', () => {
     }
 });
 
+
+
+document.getElementById('show-progress-btn').addEventListener('click', async () => {
+    const progress = await fetchProgressReport();
+
+    if (progress) {
+        updateProgressDisplay(progress); // Update the display with the fetched progress
+    } else {
+        alert('Failed to fetch progress report. Please try again later.');
+    }
+});
+
 async function fetchProgressReport() {
   try {
-    const response = await fetch('/get-progress-report/', {
+    const response = await fetch('/group8/get-progress-report/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -305,17 +292,44 @@ async function fetchProgressReport() {
   }
 }
 
-document.getElementById('show-progress-btn').addEventListener('click', async () => {
-  const progress = await fetchProgressReport();
-  if (progress) {
-    // progress.total_words_learned
-    // progress.progress_by_category  (e.g. {"Fruit": 2, "Vegetable": 3} )
-    // progress.progress_by_level    (e.g. {"Beginner": 4, "Intermediate": 1} )
-    // Now pass this data to your updateProgressDisplay() or similar function
-    updateProgressDisplayServerData(progress);
-  }
- });
- 
+
+
+ function updateProgressDisplay(progress) {
+    const progressSection = document.getElementById('progress');
+    progressSection.innerHTML = ''; // Clear previous content
+
+    const totalWordsLearned = progress.total_words_learned || 0;
+    const progressByCategory = progress.progress_by_category || {};
+    const progressByLevel = progress.progress_by_level || {};
+
+    // Display total words learned
+    const totalWordsLearnedElement = document.createElement('h3');
+    totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
+    progressSection.appendChild(totalWordsLearnedElement);
+
+    // Create progress for each category
+    for (const [category, count] of Object.entries(progressByCategory)) {
+        const categoryElement = document.createElement('div');
+        categoryElement.className = 'progress-category';
+        categoryElement.innerHTML = `
+            <h4>${category}</h4>
+            <p>Words Learned: ${count}</p>
+        `;
+        progressSection.appendChild(categoryElement);
+    }
+
+    // Create progress for each level
+    for (const [level, count] of Object.entries(progressByLevel)) {
+        const levelElement = document.createElement('div');
+        levelElement.className = 'progress-level';
+        levelElement.innerHTML = `
+            <h4>${level}</h4>
+            <p>Words Learned: ${count}</p>
+        `;
+        progressSection.appendChild(levelElement);
+    }
+}
+
 // // Function to update the progress display
 // function updateProgressDisplay() {
 //     const progressSection = document.getElementById('progress');
@@ -371,5 +385,4 @@ document.getElementById('show-progress-btn').addEventListener('click', async () 
 //     const totalWordsLearnedElement = document.getElementById('total-words-learned');
 //     totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
 // }
-
 
