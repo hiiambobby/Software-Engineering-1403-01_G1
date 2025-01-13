@@ -119,6 +119,7 @@ def mark_word_as_learned_view(request, word_id):
 
 @csrf_exempt
 def add_word_view(request):
+    print('add word.................')
     if request.method == "POST":
         try:
             data = json.loads(request.body)
