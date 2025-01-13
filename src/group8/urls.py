@@ -15,9 +15,6 @@ urlpatterns = [
     path("add_word_page/", views.add_word_page, name="add_word_page"),
     path("progress/", views.progress, name="progress"),
 
-
-
-
     path("add-word/", views.add_word_view, name="add_word"),
 
     path("delete-word/<int:word_id>/", views.delete_word_view, name="delete_word"),

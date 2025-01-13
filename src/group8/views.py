@@ -110,11 +110,12 @@ def ProgressReport(request):
         'category_progress': category_progress,  # list of dicts
         'level_progress': level_progress,        # list of dicts
     }
-    return render(request, 'progress_report.html', context)
+    return render(request, 'progress.html', context)
 
 
 @csrf_exempt
 def mark_word_as_learned_view(request, word_id):
+    print("trying to mark word as learneddddddddddd")
     if request.method == "POST":
         success = WordService.mark_word_as_learned(request.user, word_id)
         if success:
@@ -220,6 +221,10 @@ def progress_report_view(request):
     if request.method == "GET":
         progress_data = WordService.get_user_progress(request.user)
         if progress_data:
+            print('progresssssssssssss')
+            print(progress_data)
+            return render(request, 'progress.html', {'group_number': '8'})
+            #return render(request, 'progress.html', progress_data)
             return JsonResponse({
                 "total_words_learned": progress_data["total_learned"],
                 "progress_by_category": progress_data["learned_by_category"],
