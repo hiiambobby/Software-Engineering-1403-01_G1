@@ -2,6 +2,7 @@
 from django.urls import path,include
 from . import views
 from django.contrib import admin
+from .views import Signup8Page, Login8Page, Logout8Page
 
 app_name = 'group8'
 
@@ -9,7 +10,7 @@ urlpatterns = [
     
     path('admin/', admin.site.urls),
     path('accounts/', include('registration.urls')), 
-    path('', views.home, name='group8'),
+    path('', views.home, name='home'),
     path("add-word/", views.add_word_view, name="add_word"),
 
     path("delete-word/<int:word_id>/", views.delete_word_view, name="delete_word"),
@@ -22,4 +23,7 @@ urlpatterns = [
     path("mark-word-learned/<int:word_id>/", views.mark_word_as_learned_view, name="mark_word_learned"),
 
     path("get-progress-report/", views.progress_report_view, name="get_progress_report"),
+    path('signup8/', views.Signup8Page, name='signup8'),
+    path('login8/', views.Login8Page, name='login8'),
+    path('logout8/', views.Logout8Page, name='logout8'),
 ]
