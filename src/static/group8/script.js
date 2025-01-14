@@ -1,7 +1,13 @@
 // Mock function simulating backend response
-async function loadWordsFromBackend(category, level) {
+async function loadWordsFromBackend(category = '', level = '') {
   try {
-    const response = await fetch(`/group8/get-words-by-category-level/?category=${category}&level=${level}`, {
+    let url = '/group8/get-words-by-category-level/';
+    if (category || level) {
+      url += `?category=${category}&level=${level}`;
+    } else {
+      url = '/group8/fetch-all-words/';
+    }
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -37,10 +43,12 @@ let totalWordsLearned = 0; // To track total words learned
 // Toggle sound icon
 let isSoundOn = true;
 const soundBtn = document.getElementById('sound-btn');
-soundBtn.addEventListener('click', () => {
-    isSoundOn = !isSoundOn;
-    soundBtn.textContent = isSoundOn ? '🔊' : '🔇';
-});
+if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+        isSoundOn = !isSoundOn;
+        soundBtn.textContent = isSoundOn ? '🔊' : '🔇';
+    });
+}
 
 // Search functionality
 const searchBar = document.getElementById('search-bar');
@@ -206,20 +214,32 @@ function updateWordDisplay(words = allWords) {
 }
 
 // Start button functionality
-document.getElementById('start-btn').addEventListener('click', async () => {
-  const category = document.getElementById('category').value;
-  const level = document.getElementById('level').value;
-  if (category || level) {
-    const words = await loadWordsFromBackend(category, level);
-    allWords = words;      // your global array
-    currentPage = 0;       // reset pagination to page 0
-    updateWordDisplay();   // now displays real data from Django
-  } else {
-    alert('Please select category or level to start learning.');
-  }
+const startBtn = document.getElementById('start-btn');
+if (startBtn) {
+    startBtn.addEventListener('click', async () => {
+        const category = document.getElementById('category').value;
+        const level = document.getElementById('level').value;
+        if (category || level) {
+            const words = await loadWordsFromBackend(category, level);
+            allWords = words;      // your global array
+            currentPage = 0;       // reset pagination to page 0
+            updateWordDisplay();   // now displays real data from Django
+        } else {
+            alert('Please select category or level to start learning.');
+        }
+    });
+}
+
+async function loadAndDisplayWords() {
+    const words = await loadWordsFromBackend('', ''); // Fetch all words without filtering by category or level
+    allWords = words;
+    currentPage = 0;
+    updateWordDisplay();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadAndDisplayWords();
 });
-
-
 
 ////delete words/////
 async function deleteWord(wordId) {
@@ -290,8 +310,9 @@ wordImageInput.addEventListener('change', () => {
     }
 });
 
-
-
+document.addEventListener('DOMContentLoaded', () => {
+    loadAndDisplayWords();
+});
 
 // //Fetch and display the progress report when the page loads
 // document.addEventListener('DOMContentLoaded', async () => {

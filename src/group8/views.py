@@ -10,13 +10,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import json
 from .services import WordService
-from .models import Word, UserProgress, UserProfile, Request, Like
+from .models import Word, UserProgress, UserProfile, Request
 from django.core.files.base import ContentFile
 from django.contrib.admin.views.decorators import staff_member_required
 
 
 def home(request):
-    return render(request, 'group8.html', {'group_number': '8'})
+    words = Word.objects.all()
+    return render(request, 'group8.html', {'group_number': '8', 'words': words})
 
 #saba added this
 def add_word_page(request):
@@ -244,14 +245,14 @@ def get_words_by_category_level_view(request):
         return JsonResponse({"words": words_list}, status=200)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-@login_required
-def like_word(request, word_id):
-    word = get_object_or_404(Word, id=word_id)
-    like, created = Like.objects.get_or_create(user=request.user, word=word)
-    if created:
-        return JsonResponse({'message': 'Word liked successfully!'}, status=201)
-    else:
-        return JsonResponse({'message': 'You have already liked this word.'}, status=200)
+# @login_required
+# def like_word(request, word_id):
+#     word = get_object_or_404(Word, id=word_id)
+#     like, created = Like.objects.get_or_create(user=request.user, word=word)
+#     if created:
+#         return JsonResponse({'message': 'Word liked successfully!'}, status=201)
+#     else:
+#         return JsonResponse({'message': 'You have already liked this word.'}, status=200)
 @csrf_exempt
 def search_word_view(request):
     if request.method == "GET":
@@ -291,5 +292,16 @@ def progress_report_view(request):
                 "progress_by_level": progress_data["learned_by_level"],
             }, status=200)
         return JsonResponse({"error": "Failed to retrieve progress report."}, status=500)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt
+def fetch_all_words_view(request):
+    if request.method == "GET":
+        words = Word.objects.all()
+        words_list = [
+            {"id": w.id, "title": w.title, "category": w.category, "level": w.level, "image_url": w.image_url}
+            for w in words
+        ]
+        return JsonResponse({"words": words_list}, status=200)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 

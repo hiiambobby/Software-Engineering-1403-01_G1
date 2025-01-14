@@ -2,7 +2,7 @@
 from django.urls import path,include
 from . import views
 from django.contrib import admin
-from .views import Signup8Page, Login8Page, Logout8Page
+from .views import Signup8Page, Login8Page, Logout8Page, fetch_all_words_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -18,7 +18,7 @@ urlpatterns = [
     path("progress/", views.ProgressReport, name="progress"),
 
     path("add-word/", views.add_word_view, name="add_word"),
-    path('like-word/<int:word_id>/', views.like_word, name='like_word'),
+#  path('like-word/<int:word_id>/', views.like_word, name='like_word'),
     path("delete-word/<int:word_id>/", views.delete_word_view, name="delete_word"),
     path("edit-word/<int:word_id>/", views.edit_word_view, name="edit_word"),
 
@@ -32,6 +32,7 @@ urlpatterns = [
     path('signup8/', views.Signup8Page, name='signup8'),
     path('login8/', views.Login8Page, name='login8'),
     path('logout8/', views.Logout8Page, name='logout8'),
+    path("fetch-all-words/", fetch_all_words_view, name="fetch_all_words"),
     
 ]
 
