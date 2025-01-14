@@ -113,15 +113,13 @@ function updateWordDisplay(words = allWords) {
 
     const word = words[currentPage];
     wordList.innerHTML = `
-        <li class="word-item">
+        <li class="word-item" style="text-align: center; width: 300px; margin: auto;">
             <h3>${word.title}</h3>
-            <img src="${word.image_url}" alt="${word.title}" class="word-image">
-            <div class="button-container">
-                <button class="learned-btn">I know this word!</button>
-                <button class="dont-remember-btn">I don't remember</button>
-                <button class="favorite-btn">Like</button>
-                <button class="edit-btn">Edit</button>
-                <button class="delete-btn">Delete</button>
+            <img src="${word.image_url}" alt="${word.title}" class="word-image" style="max-width: 300px; max-height: 300px;">
+            <div class="button-container" style="margin-top: 10px;">
+                <button class="learned-btn">✔️</button>
+                <button class="edit-btn">✏️</button>
+                <button class="delete-btn">🗑️</button>
             </div>
         </li>
     `;
@@ -145,17 +143,6 @@ function updateWordDisplay(words = allWords) {
         } catch (err) {
             console.error('Error:', err);
         }
-    });
-
-    // 'I don't remember' button functionality
-    document.querySelector('.dont-remember-btn').addEventListener('click', () => {
-        if (isSoundOn) alert('Keep trying!');
-    });
-
-    // 'Favorite' button functionality
-    document.querySelector('.favorite-btn').addEventListener('click', (event) => {
-        event.target.textContent = 'Liked';
-        event.target.disabled = true;
     });
 
     // 'Edit' button functionality
@@ -183,9 +170,9 @@ function updateWordDisplay(words = allWords) {
 
     // Update pagination controls
     paginationControls.innerHTML = `
-        <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''}>Previous</button>
+        <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''}>⬅️</button>
         <span>Word ${currentPage + 1} of ${words.length}</span>
-        <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''}>Next</button>
+        <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''}>➡️</button>
     `;
 
     // Add event listeners for pagination buttons
