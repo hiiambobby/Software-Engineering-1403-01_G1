@@ -117,6 +117,20 @@ def add_word_view(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+            image_data = data.get("image_url")
+            
+            # Decode and save image
+            if image_data and image_data.startswith("data:image"):
+                format, imgstr = image_data.split(';base64,')  # Split format and image data
+                ext = format.split('/')[-1]  # Get file extension
+                image_file = ContentFile(base64.b64decode(imgstr), name=f"word_image.{ext}")
+
+                # Save image to the media directory
+                image_path = f"media/words/{image_file.name}"
+                with open(image_path, "wb") as f:
+                    f.write(image_file.read())
+                data["image_url"] = image_path  # Update with saved path
+
             word_data = {
                 "title": data.get("title"),
                 "category": data.get("category"),
@@ -126,11 +140,11 @@ def add_word_view(request):
             word = WordService.add_word(request.user, word_data)
             if word:
                 return JsonResponse({"message": "Word added successfully.", "word_id": word.id}, status=201)
+           
             return JsonResponse({"error": "Failed to add word."}, status=500)
         except Exception as e:
             return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
     return JsonResponse({"error": "Invalid request method."}, status=400)
-
 #inam mesle paiini
 @csrf_exempt
 def delete_word_view(request, word_id):
@@ -183,26 +197,18 @@ def get_words_by_category_level_view(request):
 
 @csrf_exempt
 def search_word_view(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            title = data.get("title")
-            category = data.get("category", None)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON data."}, status=400)
-    elif request.method == "GET":
+    if request.method == "GET":
         title = request.GET.get("title")
         category = request.GET.get("category", None)
-    
-    if not title:
-        return JsonResponse({"error": "Title is required."}, status=400)
-    
-    words = WordService.search_word(title, category)
-    words_list = [
-        {"id": w.id, "title": w.title, "category": w.category, "level": w.level, "image_url": w.image_url}
-        for w in words
-    ]
-    return JsonResponse({"words": words_list}, status=200)
+        if not title:
+            return JsonResponse({"error": "Title is required."}, status=400)
+        words = WordService.search_word(title, category)
+        words_list = [
+            {"id": w.id, "title": w.title, "category": w.category, "level": w.level, "image_url": w.image_url}
+            for w in words
+        ]
+        return JsonResponse({"words": words_list}, status=200)
+    return JsonResponse({"error": "Invalid request method."}, status=400)
 
 
 @csrf_exempt
@@ -229,3 +235,4 @@ def progress_report_view(request):
             }, status=200)
         return JsonResponse({"error": "Failed to retrieve progress report."}, status=500)
     return JsonResponse({"error": "Invalid request method."}, status=400)
+

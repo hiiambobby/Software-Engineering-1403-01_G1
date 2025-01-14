@@ -61,7 +61,7 @@ document.getElementById('add-word-btn').addEventListener('click', async () => {
 
                 const data = await response.json();
                 alert('New word added successfully!');
-                // Optionally update your UI
+             //   window.location.href = "{%url "; // Redirect to group8.html
             } catch (error) {
                 console.error('Fetch error:', error);
             }
