@@ -76,6 +76,7 @@ async function searchWords(searchText, category = null) {
     return [];
   }
 }
+
 // Function to get CSRF token from cookies
 function getCookie(name) {
     let cookieValue = null;
@@ -170,7 +171,7 @@ function updateWordDisplay(words = allWords) {
 
     // Update pagination controls
     paginationControls.innerHTML = `
-        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 25px;">
             <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''} style="padding: 10px; font-size: 16px;">⬅️</button>
             <span>Word ${currentPage + 1} of ${words.length}</span>
             <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''} style="padding: 10px; font-size: 16px;">➡️</button>
@@ -217,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAndDisplayWords();
 });
 
-////delete words/////
+// Delete words
 async function deleteWord(wordId) {
   try {
     const response = await fetch(`/group8/delete-word/${wordId}/`, {
@@ -230,7 +231,6 @@ async function deleteWord(wordId) {
     const data = await response.json();
     if (response.ok) {
       alert(data.message);
-      // Optionally remove from your allWords array, etc.
     } else {
       alert('Failed to delete word: ' + data.error);
     }
@@ -238,7 +238,8 @@ async function deleteWord(wordId) {
     console.error('Delete word error:', error);
   }
 }
-//////edit//////
+
+// Edit word
 async function editWord(wordId, title, category, level, imageUrl) {
   const payload = { title, category, level, image_url: imageUrl };
   try {
@@ -260,7 +261,7 @@ async function editWord(wordId, title, category, level, imageUrl) {
     console.error('Edit word error:', error);
   }
 }
-////////////////////////
+
 // Preview uploaded image
 const wordImageInput = document.getElementById('word-image');
 const imagePreview = document.getElementById('image-preview');
@@ -270,7 +271,7 @@ wordImageInput.addEventListener('change', () => {
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            imagePreview.innerHTML = ''; // Ensure previous image is cleared
+            imagePreview.innerHTML = ''; 
             const img = document.createElement('img');
             img.src = e.target.result;
             img.alt = 'Selected Image';
@@ -288,45 +289,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAndDisplayWords();
 });
 
-// // Function to update the progress display
-// function updateProgressDisplay() {
-//     const progressSection = document.getElementById('progress');
-//     const progressContainer = progressSection.querySelector('div') || document.createElement('div');
-//     progressSection.appendChild(progressContainer);
-
-//     const getTotalWords = (category) => (
-//         progressData[category].beginner +
-//         progressData[category].intermediate +
-//         progressData[category].advanced
-//     );
-
-//     const categories = ['animals', 'fruits', 'objects'];
-//     const colors = ['#4caf50', '#ff9800', '#f44336'];
-
-//     progressContainer.innerHTML = categories.map(category => `
-//         <div class="progress-category">
-//             <h3>${category.charAt(0).toUpperCase() + category.slice(1)}</h3>
-//             <div class="progress-levels">
-//                 ${['beginner', 'intermediate', 'advanced'].map((level, index) => `
-//                     <div class="circle" style="background: conic-gradient(${colors[index]} ${progressData[category][level] * 100 / getTotalWords(category)}%, lightgray 0%);"></div>
-//                     <span>${level.charAt(0).toUpperCase() + level.slice(1)}: ${progressData[category][level]}/${getTotalWords(category)}</span>
-//                 `).join('')}
-//             </div>
-//             <p>Total Words: ${getTotalWords(category)}</p>
-//         </div>
-//     `).join('');
-
-//     // Update the total progress count
-//     const totalWordsLearnedElement = document.getElementById('total-words-learned');
-//     totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
-// }
-
-// // Fetch and display the progress report when the page loads
-// document.addEventListener('DOMContentLoaded', async () => {
-//     const progress = await fetchProgressReport();
-//     if (progress) {
-//         updateProgressDisplay(progress);
-//     } else {
-//         alert('Failed to fetch progress report. Please try again later.');
-//     }
-// });
+// ...existing code...
