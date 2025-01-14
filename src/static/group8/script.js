@@ -1,31 +1,31 @@
 // Mock function simulating backend response
 async function loadWordsFromBackend(category = '', level = '') {
-  try {
-    let url = '/group8/get-words-by-category-level/';
-    if (category || level) {
-      url += `?category=${category}&level=${level}`;
-    } else {
-      url = '/group8/fetch-all-words/';
+    try {
+        let url = '/group8/get-words-by-category-level/';
+        const params = new URLSearchParams();
+        if (category) params.append('category', category);
+        if (level) params.append('level', level);
+        if (params.toString()) url += `?${params.toString()}`;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.words.map(word => ({
+            ...word,
+            image_url: decodeURIComponent(word.image_url)
+        }));
+    } catch (error) {
+        console.error("Error fetching words:", error);
+        return [];
     }
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-     , 'X-CSRFToken': getCookie('csrftoken')// if CSRF is enforced
-      }
-    });
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
-    const data = await response.json();  // data = { "words": [...] }
-    return data.words.map(word => ({
-        ...word,
-        image_url: decodeURIComponent(word.image_url) // Ensure URL is decoded
-    }));
-  } catch (error) {
-    console.error("Error fetching words:", error);
-    return [];
-  }
 }
 
 // Initialize variables

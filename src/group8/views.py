@@ -237,9 +237,14 @@ def get_words_by_category_level_view(request):
     if request.method == "GET":
         category = request.GET.get("category")
         level = request.GET.get("level")
-        # if not category or not level:
-        #     return JsonResponse({"error": "Category and level are required."}, status=400)
-        words = WordService.get_words_by_category_level(category, level)
+        
+        # Filter words based on provided category and/or level
+        words = Word.objects.all()
+        if category:
+            words = words.filter(category=category)
+        if level:
+            words = words.filter(level=level)
+        
         words_list = [
             {"id": w.id, "title": w.title, "category": w.category, "level": w.level, "image_url": w.image_url}
             for w in words
