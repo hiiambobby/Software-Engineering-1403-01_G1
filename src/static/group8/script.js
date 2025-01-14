@@ -113,13 +113,13 @@ function updateWordDisplay(words = allWords) {
 
     const word = words[currentPage];
     wordList.innerHTML = `
-        <li class="word-item" style="text-align: center; width: 300px; margin: auto;">
+        <li class="word-item" style="text-align: center; width: 500px; margin: auto;">
             <h3>${word.title}</h3>
-            <img src="${word.image_url}" alt="${word.title}" class="word-image" style="max-width: 300px; max-height: 300px;">
-            <div class="button-container" style="margin-top: 10px;">
-                <button class="learned-btn">✔️</button>
-                <button class="edit-btn">✏️</button>
-                <button class="delete-btn">🗑️</button>
+            <img src="${word.image_url}" alt="${word.title}" class="word-image" style="max-width: 400px; max-height: 400px; display: block; margin: 0 auto;">
+            <div class="button-container" style="margin-top: 10px; display: flex; justify-content: center; gap: 10px;">
+                <button class="learned-btn" style="padding: 10px; font-size: 16px;">✔️</button>
+                <button class="edit-btn" style="padding: 10px; font-size: 16px;">✏️</button>
+                <button class="delete-btn" style="padding: 10px; font-size: 16px;">🗑️</button>
             </div>
         </li>
     `;
@@ -170,9 +170,11 @@ function updateWordDisplay(words = allWords) {
 
     // Update pagination controls
     paginationControls.innerHTML = `
-        <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''}>⬅️</button>
-        <span>Word ${currentPage + 1} of ${words.length}</span>
-        <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''}>➡️</button>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+            <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''} style="padding: 10px; font-size: 16px;">⬅️</button>
+            <span>Word ${currentPage + 1} of ${words.length}</span>
+            <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''} style="padding: 10px; font-size: 16px;">➡️</button>
+        </div>
     `;
 
     // Add event listeners for pagination buttons
