@@ -142,6 +142,9 @@ button{
     <form method="post" action="{%url 'group8:login8'%}">
         <h3>Login Here</h3>
         {% csrf_token %} 
+        {% if error %}
+        <p style="color: red; text-align: center;">{{ error }}</p>
+        {% endif %}
         <label for="username">Username</label>
         <input type="text" placeholder="Enter Username" id="username" name="username">
 
