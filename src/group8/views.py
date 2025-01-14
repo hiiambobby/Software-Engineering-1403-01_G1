@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import json
 from .services import WordService
-from .models import Word, UserProgress, UserProfile, Request
+from .models import Word, UserProgress, UserProfile, Request, Like
 from django.core.files.base import ContentFile
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -244,7 +244,14 @@ def get_words_by_category_level_view(request):
         return JsonResponse({"words": words_list}, status=200)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-
+@login_required
+def like_word(request, word_id):
+    word = get_object_or_404(Word, id=word_id)
+    like, created = Like.objects.get_or_create(user=request.user, word=word)
+    if created:
+        return JsonResponse({'message': 'Word liked successfully!'}, status=201)
+    else:
+        return JsonResponse({'message': 'You have already liked this word.'}, status=200)
 @csrf_exempt
 def search_word_view(request):
     if request.method == "GET":

@@ -197,3 +197,18 @@ def search_posts_tag_for_all(db_connection, query):
 
     cursor.close()
     return posts_list
+
+if __name__ == "__main__":
+    db_connection = create_db_connection()
+    if db_connection:
+        create_like_table_query = """
+        CREATE TABLE IF NOT EXISTS `like` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `user_id` INT NOT NULL,
+            `word_id` INT NOT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (`user_id`) REFERENCES `auth_user`(`id`),
+            FOREIGN KEY (`word_id`) REFERENCES `group8_word`(`id`)
+        );
+        """
+        create_table(db_connection, create_like_table_query)
