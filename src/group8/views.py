@@ -13,6 +13,7 @@ from .services import WordService
 from .models import Word, UserProgress, UserProfile, Request
 from django.core.files.base import ContentFile
 from django.contrib.admin.views.decorators import staff_member_required
+import uuid
 
 
 def home(request):
@@ -125,10 +126,11 @@ def add_word_view(request):
             if image_data and image_data.startswith("data:image"):
                 format, imgstr = image_data.split(';base64,')  # Split format and image data
                 ext = format.split('/')[-1]  # Get file extension
-                image_file = ContentFile(base64.b64decode(imgstr), name=f"word_image.{ext}")
+                unique_filename = f"{uuid.uuid4()}.{ext}"
+                image_file = ContentFile(base64.b64decode(imgstr), name=unique_filename)
 
                 # Save image to the media directory
-                image_path = f"media/words/{image_file.name}"
+                image_path = f"media/words/{unique_filename}"
                 with open(image_path, "wb") as f:
                     f.write(image_file.read())
                 data["image_url"] = image_path  # Update with saved path
@@ -235,9 +237,14 @@ def get_words_by_category_level_view(request):
     if request.method == "GET":
         category = request.GET.get("category")
         level = request.GET.get("level")
-        # if not category or not level:
-        #     return JsonResponse({"error": "Category and level are required."}, status=400)
-        words = WordService.get_words_by_category_level(category, level)
+        
+        # Filter words based on provided category and/or level
+        words = Word.objects.all()
+        if category:
+            words = words.filter(category=category)
+        if level:
+            words = words.filter(level=level)
+        
         words_list = [
             {"id": w.id, "title": w.title, "category": w.category, "level": w.level, "image_url": w.image_url}
             for w in words

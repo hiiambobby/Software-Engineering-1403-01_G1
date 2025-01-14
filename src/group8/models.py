@@ -27,7 +27,7 @@ class Word(models.Model):
     level = models.CharField(max_length=50, default="none")
     category = models.CharField(max_length=50, default="none")
     image_url = models.URLField(max_length=255, default="images/default_image.jpg")
-
+    #image = models.ImageField(upload_to='images/', default="words/default_image.jpg")
     def get_category(self):
         return self.category
 
