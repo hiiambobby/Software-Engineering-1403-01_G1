@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-from database.secret import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
+from settings import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
 
 # Define a function to create a connection to the database
 def create_db_connection(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME):
