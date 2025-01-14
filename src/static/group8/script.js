@@ -172,7 +172,7 @@ function updateWordDisplay(words = allWords) {
         if (newTitle && newCategory && newLevel) {
             editWord(word.id, newTitle, newCategory, newLevel, word.image_url);
             words[currentPage] = { ...word, title: newTitle, category: newCategory, level: newLevel };
-            updateWordDisplay(words);
+            //updateWordDisplay(words);
         }
     });
 
@@ -182,7 +182,7 @@ function updateWordDisplay(words = allWords) {
             await deleteWord(word.id);
             words.splice(currentPage, 1);
             currentPage = Math.max(currentPage - 1, 0);
-            updateWordDisplay(words);
+            //updateWordDisplay(words);
         }
     });
 
@@ -209,13 +209,13 @@ function updateWordDisplay(words = allWords) {
 document.getElementById('start-btn').addEventListener('click', async () => {
   const category = document.getElementById('category').value;
   const level = document.getElementById('level').value;
-  if (category && level) {
+  if (category || level) {
     const words = await loadWordsFromBackend(category, level);
     allWords = words;      // your global array
     currentPage = 0;       // reset pagination to page 0
     updateWordDisplay();   // now displays real data from Django
   } else {
-    alert('Please select both category and level.');
+    alert('Please select category or level to start learning.');
   }
 });
 
@@ -233,7 +233,7 @@ async function deleteWord(wordId) {
     });
     const data = await response.json();
     if (response.ok) {
-      alert('Word deleted successfully!');
+      alert(data.message);
       // Optionally remove from your allWords array, etc.
     } else {
       alert('Failed to delete word: ' + data.error);
@@ -256,7 +256,7 @@ async function editWord(wordId, title, category, level, imageUrl) {
     });
     const data = await response.json();
     if (response.ok) {
-      alert('Word updated successfully.');
+      alert(data.message);
     } else {
       alert('Failed to update word: ' + data.error);
     }

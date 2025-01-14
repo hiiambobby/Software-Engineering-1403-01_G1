@@ -49,6 +49,10 @@ class WordService:
 
     @staticmethod
     def get_words_by_category_level(category, level):
+        if category:
+            return Word.objects.filter(category=category)
+        if level : 
+            return Word.objects.filter(level=level)
         return Word.objects.filter(category=category, level=level)
 
     @staticmethod

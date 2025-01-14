@@ -10,8 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import json
 from .services import WordService
-from .models import Word, UserProgress, UserProfile
+from .models import Word, UserProgress, UserProfile, Request
 from django.core.files.base import ContentFile
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 def home(request):
@@ -146,37 +147,86 @@ def add_word_view(request):
             return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 #inam mesle paiini
+# @csrf_exempt
+# def delete_word_view(request, word_id):
+#     if request.method == "DELETE":
+#         success = WordService.delete_word(request.user, word_id)
+#         if success:
+#             return JsonResponse({"message": "Word deleted successfully."}, status=200)
+#         return JsonResponse({"error": "Failed to delete word."}, status=404)
+#     return JsonResponse({"error": "Invalid request method."}, status=400)
+
 @csrf_exempt
 def delete_word_view(request, word_id):
     if request.method == "DELETE":
-        success = WordService.delete_word(request.user, word_id)
-        if success:
-            return JsonResponse({"message": "Word deleted successfully."}, status=200)
-        return JsonResponse({"error": "Failed to delete word."}, status=404)
+        Request.objects.create(
+            user=request.user,
+            word_id=word_id,
+            request_type='delete'
+        )
+        return JsonResponse({"message": "Delete request submitted."}, status=200)
     return JsonResponse({"error": "Invalid request method."}, status=400)
-
 #in bayad edit beshe va peygham biad ke darkhast shoma ersal gardid baad admin ae khast bere tu jadvale darkhasta negah kone va khodesh dasti pak kone ya hich kar nakone
+# @csrf_exempt
+# def edit_word_view(request, word_id):
+#     if request.method == "PUT":
+#         try:
+#             data = json.loads(request.body)
+#             image_url = data.get("image_url")
+#             if not image_url.startswith("http://") and not image_url.startswith("https://"):
+#                 return JsonResponse({"error": "Invalid image URL."}, status=400)
+#             word_data = {
+#                 "title": data.get("title"),
+#                 "category": data.get("category"),
+#                 "level": data.get("level"),
+#                 "image_url": image_url,
+#             }
+#             word = WordService.edit_word(request.user, word_id, word_data)
+#             if word:
+#                 return JsonResponse({"message": "Word updated successfully.", "word_id": word.id}, status=200)
+#             return JsonResponse({"error": "Failed to update word."}, status=404)
+#         except Exception as e:
+#             return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
+#     return JsonResponse({"error": "Invalid request method."}, status=400)
 @csrf_exempt
 def edit_word_view(request, word_id):
     if request.method == "PUT":
         try:
             data = json.loads(request.body)
-            image_url = data.get("image_url")
-            if not image_url.startswith("http://") and not image_url.startswith("https://"):
-                return JsonResponse({"error": "Invalid image URL."}, status=400)
-            word_data = {
-                "title": data.get("title"),
-                "category": data.get("category"),
-                "level": data.get("level"),
-                "image_url": image_url,
-            }
-            word = WordService.edit_word(request.user, word_id, word_data)
-            if word:
-                return JsonResponse({"message": "Word updated successfully.", "word_id": word.id}, status=200)
-            return JsonResponse({"error": "Failed to update word."}, status=404)
-        except Exception as e:
-            return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
+            Request.objects.create(
+                user=request.user,
+                word_id=word_id,
+                request_type='edit',
+                data=data
+            )
+            return JsonResponse({"message": "Edit request submitted."}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
+
+@staff_member_required
+def view_requests(request):
+    requests = Request.objects.filter(status='pending')
+    return render(request, 'group8/view_requests.html', {'requests': requests})
+
+@staff_member_required
+def approve_request(request, request_id):
+    req = Request.objects.get(id=request_id)
+    if req.request_type == 'edit':
+        WordService.edit_word(req.user, req.word.id, req.data)
+    elif req.request_type == 'delete':
+        WordService.delete_word(req.user, req.word.id)
+    req.status = 'approved'
+    req.save()
+    return redirect('group8:view_requests')
+
+@staff_member_required
+def reject_request(request, request_id):
+    req = Request.objects.get(id=request_id)
+    req.status = 'rejected'
+    req.save()
+    return redirect('group8:view_requests')
 
 #in bayad edit beshe va tabe betune ba faghat ya category ya level ham filter kone va kalamato bargardune
 @csrf_exempt
@@ -184,8 +234,8 @@ def get_words_by_category_level_view(request):
     if request.method == "GET":
         category = request.GET.get("category")
         level = request.GET.get("level")
-        if not category or not level:
-            return JsonResponse({"error": "Category and level are required."}, status=400)
+        # if not category or not level:
+        #     return JsonResponse({"error": "Category and level are required."}, status=400)
         words = WordService.get_words_by_category_level(category, level)
         words_list = [
             {"id": w.id, "title": w.title, "category": w.category, "level": w.level, "image_url": w.image_url}

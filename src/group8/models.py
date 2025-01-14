@@ -86,3 +86,19 @@ class UserProgress(models.Model):
 
     def __str__(self):
         return f"Progress for {self.user.username}"
+
+class Request(models.Model):
+    REQUEST_TYPE_CHOICES = [
+        ('edit', 'Edit'),
+        ('delete', 'Delete'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    word = models.ForeignKey('Word', on_delete=models.CASCADE)
+    request_type = models.CharField(max_length=6, choices=REQUEST_TYPE_CHOICES)
+    data = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, default='pending')
+
+    def str(self):
+        return f"{self.user.username} - {self.request_type} - {self.word.title}"
