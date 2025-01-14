@@ -38,30 +38,60 @@ function updateProgressDisplay(progress) {
     for (const [category, count] of Object.entries(progressByCategory)) {
         const categoryElement = document.createElement('div');
         categoryElement.className = 'progress-category';
-        const percentage = (count / totalWordsLearned) * 100;
-        categoryElement.innerHTML = `
-            <h4>${category}</h4>
-            <div class="circle" style="background: conic-gradient(#4caf50 ${percentage}%, lightgray 0%);">
-                ${Math.round(percentage)}%
-            </div>
-            <p>Words Learned: ${count}</p>
-        `;
+        const canvas = document.createElement('canvas');
+        categoryElement.appendChild(canvas);
         progressContainer.appendChild(categoryElement);
+
+        new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels: [category, 'Remaining'],
+                datasets: [{
+                    data: [count, totalWordsLearned - count],
+                    backgroundColor: ['#4caf50', '#e0e0e0']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutoutPercentage: 70,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
     }
 
     // Create progress for each level
     for (const [level, count] of Object.entries(progressByLevel)) {
         const levelElement = document.createElement('div');
         levelElement.className = 'progress-level';
-        const percentage = (count / totalWordsLearned) * 100;
-        levelElement.innerHTML = `
-            <h4>${level}</h4>
-            <div class="circle" style="background: conic-gradient(#4caf50 ${percentage}%, lightgray 0%);">
-                ${Math.round(percentage)}%
-            </div>
-            <p>Words Learned: ${count}</p>
-        `;
+        const canvas = document.createElement('canvas');
+        levelElement.appendChild(canvas);
         progressContainer.appendChild(levelElement);
+
+        new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels: [level, 'Remaining'],
+                datasets: [{
+                    data: [count, totalWordsLearned - count],
+                    backgroundColor: ['#2196f3', '#e0e0e0']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutoutPercentage: 70,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
     }
 }
 

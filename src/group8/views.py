@@ -27,44 +27,29 @@ def Signup8Page(request):
     if request.method == 'POST':
         uname = request.POST.get('username')
         email = request.POST.get('email')
-        pass1 = request.POST.get('password1')
-        pass2 = request.POST.get('password2')
-        name = request.POST.get('name')  # extra field from the form
-        age = request.POST.get('age')    # extra field from the form
+        pass1 = request.POST.get('password')
+        pass2 = request.POST.get('confirm_password')
+
+        if not uname or not email or not pass1 or not pass2:
+            return render(request, 'signup8.html', {'error': 'All fields are required.'})
 
         if pass1 != pass2:
-            return HttpResponse("Your password and confirm password do not match!")
-       
-        # Check if username is taken
+            return render(request, 'signup8.html', {'error': 'Passwords do not match.'})
+
         if User.objects.filter(username=uname).exists():
-            return HttpResponse("This username is already taken. Please choose another one.")
-        
-       
+            return render(request, 'signup8.html', {'error': 'Username already exists.'})
+
+        if User.objects.filter(email=email).exists():
+            return render(request, 'signup8.html', {'error': 'Email already exists.'})
+
         try:
-            # Create the user via Django's ORM
-            my_user = User.objects.create_user(username=uname, email=email, password=pass1,is_active = True)
-           
-            # Create UserProfile to store name and age
-            user_profile = UserProfile.objects.create(
-                user=my_user,
-                name=name,
-                age=age if age else None
-            )
-            # (Optional) :
-            user_profile.name = name
-            user_profile.age = age
-            user_profile.save()
-
-            # Automatically log the user in if desired:
-            login(request, my_user)
-            return redirect('group8:home')  
-
+            user = User.objects.create_user(username=uname, email=email, password=pass1)
+            user.save()
+            login(request, user)
+            return redirect('group8:home')
         except IntegrityError:
-            return HttpResponse("An error occurred while creating your account. Please try again.")
-        
-    elif request.method == "GET":
-        return render(request, 'signup8.html')    
-   
+            return render(request, 'signup8.html', {'error': 'An error occurred while creating your account. Please try again.'})
+
     return render(request, 'signup8.html')
 
 
