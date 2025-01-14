@@ -288,9 +288,6 @@ async function editWord(wordId, title, category, level, imageUrl) {
   }
 }
 ////////////////////////
-
-
-
 // Preview uploaded image
 const wordImageInput = document.getElementById('word-image');
 const imagePreview = document.getElementById('image-preview');
