@@ -119,6 +119,9 @@ function updateWordDisplay(words = allWords) {
         return;
     }
 
+    // Sort words alphabetically by title
+    words.sort((a, b) => a.title.localeCompare(b.title));
+
     // Ensure currentPage is within bounds
     if (currentPage >= words.length) {
         currentPage = words.length - 1;
@@ -293,10 +296,11 @@ const wordImageInput = document.getElementById('word-image');
 const imagePreview = document.getElementById('image-preview');
 wordImageInput.addEventListener('change', () => {
     const file = wordImageInput.files[0];
-    imagePreview.innerHTML = '';
+    imagePreview.innerHTML = ''; // Clear previous image
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
+            imagePreview.innerHTML = ''; // Ensure previous image is cleared
             const img = document.createElement('img');
             img.src = e.target.result;
             img.alt = 'Selected Image';
