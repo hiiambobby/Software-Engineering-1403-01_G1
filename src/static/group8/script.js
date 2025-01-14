@@ -12,7 +12,10 @@ async function loadWordsFromBackend(category, level) {
       throw new Error(`Server error: ${response.status}`);
     }
     const data = await response.json();  // data = { "words": [...] }
-    return data.words;
+    return data.words.map(word => ({
+        ...word,
+        image_url: decodeURIComponent(word.image_url) // Ensure URL is decoded
+    }));
   } catch (error) {
     console.error("Error fetching words:", error);
     return [];
@@ -117,7 +120,7 @@ function updateWordDisplay(words = allWords) {
     wordList.innerHTML = `
         <li class="word-item">
             <h3>${word.title}</h3>
-            <img src="/static/${word.image_url}" alt="${word.title}" class="word-image">
+            <img src="${word.image_url}" alt="${word.title}" class="word-image">
             <div class="button-container">
                 <button class="learned-btn">I know this word!</button>
                 <button class="dont-remember-btn">I don't remember</button>

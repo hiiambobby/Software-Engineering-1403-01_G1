@@ -24,16 +24,20 @@ document.getElementById('add-word-btn').addEventListener('click', async () => {
     if (title && category && level && file) {
         const reader = new FileReader();
         reader.onload = async (e) => {
-            console.log('File read successfully:', e.target.result); // Check Base64 data
-
             const imageDataURL = e.target.result;
+
+            // Ensure the image URL is a valid data URL
+            if (!imageDataURL.startsWith("data:image/")) {
+                alert('Invalid image URL.');
+                return;
+            }
 
             // Prepare the payload
             const payload = {
                 title: title,
                 category: category,
                 level: level,
-                image_url: imageDataURL,
+                image_url: imageDataURL, // Send the data URL directly
             };
 
             try {
@@ -46,9 +50,6 @@ document.getElementById('add-word-btn').addEventListener('click', async () => {
                     },
                     body: JSON.stringify(payload),
                 });
-
-                // Log the response for debugging
-                console.log('Response:', response);
 
                 // Check if the response is not OK
                 if (!response.ok) {
@@ -63,7 +64,6 @@ document.getElementById('add-word-btn').addEventListener('click', async () => {
                 // Optionally update your UI
             } catch (error) {
                 console.error('Fetch error:', error);
-                console.log(file); // Check the file object
             }
         };
         reader.readAsDataURL(file);

@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Count
+import re
+from django.core.exceptions import ValidationError
 
 
 # class UserProfile(models.Model):
@@ -24,7 +26,7 @@ class Word(models.Model):
     title = models.CharField(max_length=255, default="none")
     level = models.CharField(max_length=50, default="none")
     category = models.CharField(max_length=50, default="none")
-    image_url = models.CharField(max_length=255, default="images/default_image.jpg")
+    image_url = models.URLField(max_length=255, default="images/default_image.jpg")
 
     def get_category(self):
         return self.category
@@ -37,6 +39,13 @@ class Word(models.Model):
 
     def get_title(self):
         return self.title
+
+    def clean(self):
+        url_pattern = re.compile(
+            r'^(https?|ftp)://[^\s/$.?#].[^\s]*$'
+        )
+        if not url_pattern.match(self.image_url):
+            raise ValidationError("Invalid image URL.")
 
     def __str__(self):
         return self.title

@@ -1,3 +1,4 @@
+import base64
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -10,6 +11,7 @@ from django.contrib.auth.models import User
 import json
 from .services import WordService
 from .models import Word, UserProgress, UserProfile
+from django.core.files.base import ContentFile
 
 
 def home(request):
@@ -112,7 +114,6 @@ def mark_word_as_learned_view(request, word_id):
 
 @csrf_exempt
 def add_word_view(request):
-    print('add word.................')
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -146,11 +147,14 @@ def edit_word_view(request, word_id):
     if request.method == "PUT":
         try:
             data = json.loads(request.body)
+            image_url = data.get("image_url")
+            if not image_url.startswith("http://") and not image_url.startswith("https://"):
+                return JsonResponse({"error": "Invalid image URL."}, status=400)
             word_data = {
                 "title": data.get("title"),
                 "category": data.get("category"),
                 "level": data.get("level"),
-                "image_url": data.get("image_url"),
+                "image_url": image_url,
             }
             word = WordService.edit_word(request.user, word_id, word_data)
             if word:
@@ -179,18 +183,26 @@ def get_words_by_category_level_view(request):
 
 @csrf_exempt
 def search_word_view(request):
-    if request.method == "GET":
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            title = data.get("title")
+            category = data.get("category", None)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
+    elif request.method == "GET":
         title = request.GET.get("title")
         category = request.GET.get("category", None)
-        if not title:
-            return JsonResponse({"error": "Title is required."}, status=400)
-        words = WordService.search_word(title, category)
-        words_list = [
-            {"id": w.id, "title": w.title, "category": w.category, "level": w.level, "image_url": w.image_url}
-            for w in words
-        ]
-        return JsonResponse({"words": words_list}, status=200)
-    return JsonResponse({"error": "Invalid request method."}, status=400)
+    
+    if not title:
+        return JsonResponse({"error": "Title is required."}, status=400)
+    
+    words = WordService.search_word(title, category)
+    words_list = [
+        {"id": w.id, "title": w.title, "category": w.category, "level": w.level, "image_url": w.image_url}
+        for w in words
+    ]
+    return JsonResponse({"words": words_list}, status=200)
 
 
 @csrf_exempt
@@ -217,4 +229,3 @@ def progress_report_view(request):
             }, status=200)
         return JsonResponse({"error": "Failed to retrieve progress report."}, status=500)
     return JsonResponse({"error": "Invalid request method."}, status=400)
-
