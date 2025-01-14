@@ -299,45 +299,45 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAndDisplayWords();
 });
 
-// Function to update the progress display
-function updateProgressDisplay() {
-    const progressSection = document.getElementById('progress');
-    const progressContainer = progressSection.querySelector('div') || document.createElement('div');
-    progressSection.appendChild(progressContainer);
+// // Function to update the progress display
+// function updateProgressDisplay() {
+//     const progressSection = document.getElementById('progress');
+//     const progressContainer = progressSection.querySelector('div') || document.createElement('div');
+//     progressSection.appendChild(progressContainer);
 
-    const getTotalWords = (category) => (
-        progressData[category].beginner +
-        progressData[category].intermediate +
-        progressData[category].advanced
-    );
+//     const getTotalWords = (category) => (
+//         progressData[category].beginner +
+//         progressData[category].intermediate +
+//         progressData[category].advanced
+//     );
 
-    const categories = ['animals', 'fruits', 'objects'];
-    const colors = ['#4caf50', '#ff9800', '#f44336'];
+//     const categories = ['animals', 'fruits', 'objects'];
+//     const colors = ['#4caf50', '#ff9800', '#f44336'];
 
-    progressContainer.innerHTML = categories.map(category => `
-        <div class="progress-category">
-            <h3>${category.charAt(0).toUpperCase() + category.slice(1)}</h3>
-            <div class="progress-levels">
-                ${['beginner', 'intermediate', 'advanced'].map((level, index) => `
-                    <div class="circle" style="background: conic-gradient(${colors[index]} ${progressData[category][level] * 100 / getTotalWords(category)}%, lightgray 0%);"></div>
-                    <span>${level.charAt(0).toUpperCase() + level.slice(1)}: ${progressData[category][level]}/${getTotalWords(category)}</span>
-                `).join('')}
-            </div>
-            <p>Total Words: ${getTotalWords(category)}</p>
-        </div>
-    `).join('');
+//     progressContainer.innerHTML = categories.map(category => `
+//         <div class="progress-category">
+//             <h3>${category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+//             <div class="progress-levels">
+//                 ${['beginner', 'intermediate', 'advanced'].map((level, index) => `
+//                     <div class="circle" style="background: conic-gradient(${colors[index]} ${progressData[category][level] * 100 / getTotalWords(category)}%, lightgray 0%);"></div>
+//                     <span>${level.charAt(0).toUpperCase() + level.slice(1)}: ${progressData[category][level]}/${getTotalWords(category)}</span>
+//                 `).join('')}
+//             </div>
+//             <p>Total Words: ${getTotalWords(category)}</p>
+//         </div>
+//     `).join('');
 
-    // Update the total progress count
-    const totalWordsLearnedElement = document.getElementById('total-words-learned');
-    totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
-}
+//     // Update the total progress count
+//     const totalWordsLearnedElement = document.getElementById('total-words-learned');
+//     totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
+// }
 
-// Fetch and display the progress report when the page loads
-document.addEventListener('DOMContentLoaded', async () => {
-    const progress = await fetchProgressReport();
-    if (progress) {
-        updateProgressDisplay(progress);
-    } else {
-        alert('Failed to fetch progress report. Please try again later.');
-    }
-});
+// // Fetch and display the progress report when the page loads
+// document.addEventListener('DOMContentLoaded', async () => {
+//     const progress = await fetchProgressReport();
+//     if (progress) {
+//         updateProgressDisplay(progress);
+//     } else {
+//         alert('Failed to fetch progress report. Please try again later.');
+//     }
+// });

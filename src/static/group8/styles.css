@@ -1,4 +1,3 @@
-/* General Styling */
 body {
     margin: 0;
     padding: 0;
@@ -42,6 +41,31 @@ header h1 {
     font-size: 24px;
     text-align: center;
 }
+#header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#logout-btn {
+    background: none;
+    border: 2px solid white;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, background-color 0.2s, color 0.2s;
+}
+
+#logout-btn:hover {
+    transform: scale(1.1);
+    background-color: white;
+    color: #ff8c00;
+}
 
 #sound-btn {
     background: none;
@@ -53,6 +77,10 @@ header h1 {
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
+}
+
+#sound-btn:hover {
+    transform: scale(1.1);
 }
 
 /* Layout */
@@ -296,4 +324,3 @@ option {
     background-color: #ffffff;
     color: #000000;
 }
-

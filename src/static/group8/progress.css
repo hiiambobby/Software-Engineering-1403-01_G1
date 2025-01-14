@@ -34,10 +34,21 @@
 }
 
 .progress-level {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.progress-level canvas {
+    width: 120px !important;
+    height: 120px !important;
+    margin: 0 auto 10px;
+}
+
+.progress-level span {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+    color: white;
 }
 
 canvas {
