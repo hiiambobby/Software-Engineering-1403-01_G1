@@ -103,15 +103,20 @@ def ProgressReport(request):
     return render(request, 'progress.html', context)
 
 
-@csrf_exempt
+@login_required
 def mark_word_as_learned_view(request, word_id):
     print("trying to mark word as learneddddddddddd")
+    print("current user" , request.user)
     if request.method == "POST":
-        success = WordService.mark_word_as_learned(request.user, word_id)
-        if success:
+        user_progress, _ = UserProgress.objects.get_or_create(user=request.user)
+        word = get_object_or_404(Word, id=word_id)
+        sos = user_progress.learned_words.filter(id=word_id).exists()
+        print(sos)
+        if user_progress.learned_words.filter(id=word_id).exists():
+            return JsonResponse({"message": "You have already learned this word."}, status=200)
+        else :
+            user_progress.learned_words.add(word)
             return JsonResponse({"message": "Word marked as learned."}, status=200)
-        else:
-            return JsonResponse({"error": "Failed to mark word as learned."}, status=404)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
 
@@ -120,6 +125,12 @@ def add_word_view(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+            title = data.get("title")
+            
+            # Check if the word with the same title already exists
+            if Word.objects.filter(title=title).exists():
+                return JsonResponse({"error": f"{title} already exists."}, status=400)
+            
             image_data = data.get("image_url")
             
             # Decode and save image
@@ -149,6 +160,7 @@ def add_word_view(request):
         except Exception as e:
             return JsonResponse({"error": f"Invalid data: {e}"}, status=400)
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
 #inam mesle paiini
 # @csrf_exempt
 # def delete_word_view(request, word_id):
@@ -275,30 +287,48 @@ def search_word_view(request):
         return JsonResponse({"words": words_list}, status=200)
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
-
 @csrf_exempt
 def progress_report_view(request):
     """
-    Returns a JSON response matching what the test.py expects:
-    {
-      "total_words_learned": 2,
-      "progress_by_category": { ... },
-      "progress_by_level": { ... }
-    }
+    Returns a JSON response with the progress data for each category and level.
     """
     if request.method == "GET":
-        progress_data = WordService.get_user_progress(request.user)
-        if progress_data:
-            print('progresssssssssssss')
-            print(progress_data)
-            #return render(request, 'progress.html', {'group_number': '8'})
-            #return render(request, 'progress.html', progress_data)
-            return JsonResponse({
-                "total_words_learned": progress_data["total_learned"],
-                "progress_by_category": progress_data["learned_by_category"],
-                "progress_by_level": progress_data["learned_by_level"],
-            }, status=200)
-        return JsonResponse({"error": "Failed to retrieve progress report."}, status=500)
+        # Get or create UserProgress for the current user
+        user_progress, _ = UserProgress.objects.get_or_create(user=request.user)
+        total_words_learned = user_progress.get_total_learned()
+
+        # Get distinct categories and levels
+        categories = ['animals', 'fruits', 'objects']
+        levels = ['beginner', 'intermediate', 'advanced']
+
+        # Build the progress_by_category_level dictionary
+        progress_by_category_level = {}
+
+        for category in categories:
+            progress_by_category_level[category] = {}
+            for level in levels:
+                # Total words in this category and level
+                total_words = Word.objects.filter(category=category, level=level).count()
+                print(f"Total words for category '{category}' and level '{level}': {total_words}")
+
+                # Learned words for this category and level
+                learned_words = user_progress.learned_words.filter(category=category, level=level).count()
+                print(f"Learned words for category '{category}' and level '{level}': {learned_words}")
+
+                progress_by_category_level[category][level] = {
+                    "learned": learned_words,
+                    "total": total_words
+                }
+
+        print("Progress by category level:", progress_by_category_level)
+        print("Total words learned:", total_words_learned)
+
+        # Return the JSON response
+        return JsonResponse({
+            "progress_by_category_level": progress_by_category_level,
+            "total_words_learned": total_words_learned
+        }, status=200)
+
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
 @csrf_exempt

@@ -153,11 +153,8 @@ function updateWordDisplay(words = allWords) {
                 }
             });
             const data = await response.json();
-            if (response.ok) {
-                alert('Word marked as learned!');
-            } else {
-                alert('Failed to mark word as learned: ' + data.error);
-            }
+            //print(data.message);
+            alert(data.message);
         } catch (err) {
             console.error('Error:', err);
         }
@@ -289,7 +286,26 @@ async function editWord(wordId, title, category, level, imageUrl) {
 }
 ////////////////////////
 
-
+async function addWord(wordData) {
+    try {
+        const response = await fetch('/group8/add-word/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(wordData)
+        });
+        const data = await response.json();
+        if (response.ok) {
+            alert('Word added successfully!');
+        } else {
+            alert('Failed to add word: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Add word error:', error);
+    }
+}
 
 // Preview uploaded image
 const wordImageInput = document.getElementById('word-image');
@@ -318,68 +334,67 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAndDisplayWords();
 });
 
-// //Fetch and display the progress report when the page loads
-// document.addEventListener('DOMContentLoaded', async () => {
-//     const progress = await fetchProgressReport();
-//     if (progress) {
-//         updateProgressDisplay(progress);
-//     } else {
-//         alert('Failed to fetch progress report. Please try again later.');
-//     }
-// });
+// Function to fetch and display the progress report
+async function fetchProgressReport() {
+    try {
+        const response = await fetch('/group8/progress-report/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching progress report:", error);
+        return null;
+    }
+}
 
-// // Function to update the progress display
-// function updateProgressDisplay() {
-//     const progressSection = document.getElementById('progress');
-//     const progressContainer = progressSection.querySelector('div') || document.createElement('div');
-//     progressSection.appendChild(progressContainer);
+// Function to update the progress display
+function updateProgressDisplay(progressData) {
+    const progressSection = document.getElementById('progress');
+    const progressContainer = progressSection.querySelector('div') || document.createElement('div');
+    progressSection.appendChild(progressContainer);
 
-//     const getTotalWords = (category) => (
-//         progressData[category].beginner +
-//         progressData[category].intermediate +
-//         progressData[category].advanced
-//     );
+    const progressByCategoryLevel = progressData.progress_by_category_level;
+    const totalWordsLearned = progressData.total_words_learned;
 
-//     progressContainer.innerHTML = `
-//         <div class="progress-category">
-//             <h3>Animals</h3>
-//             <div class="progress-levels">
-//                 <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.animals.beginner * 100 / getTotalWords('animals')}%, lightgray 0%);"></div>
-//                 <span>Beginner: ${progressData.animals.beginner}/${getTotalWords('animals')}</span>
-//                 <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.animals.intermediate * 100 / getTotalWords('animals')}%, lightgray 0%);"></div>
-//                 <span>Intermediate: ${progressData.animals.intermediate}/${getTotalWords('animals')}</span>
-//                 <div class="circle" style="background: conic-gradient(#f44336 ${progressData.animals.advanced * 100 / getTotalWords('animals')}%, lightgray 0%);"></div>
-//                 <span>Advanced: ${progressData.animals.advanced}/${getTotalWords('animals')}</span>
-//             </div>
-//             <p>Total Words: ${getTotalWords('animals')}</p>
-//         </div>
-//         <div class="progress-category">
-//             <h3>Fruits</h3>
-//             <div class="progress-levels">
-//                 <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.fruits.beginner * 100 / getTotalWords('fruits')}%, lightgray 0%);"></div>
-//                 <span>Beginner: ${progressData.fruits.beginner}/${getTotalWords('fruits')}</span>
-//                 <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.fruits.intermediate * 100 / getTotalWords('fruits')}%, lightgray 0%);"></div>
-//                 <span>Intermediate: ${progressData.fruits.intermediate}/${getTotalWords('fruits')}</span>
-//                 <div class="circle" style="background: conic-gradient(#f44336 ${progressData.fruits.advanced * 100 / getTotalWords('fruits')}%, lightgray 0%);"></div>
-//                 <span>Advanced: ${progressData.fruits.advanced}/${getTotalWords('fruits')}</span>
-//             </div>
-//             <p>Total Words: ${getTotalWords('fruits')}</p>
-//         </div>
-//         <div class="progress-category">
-//             <h3>Objects</h3>
-//             <div class="progress-levels">
-//                 <div class="circle" style="background: conic-gradient(#4caf50 ${progressData.objects.beginner * 100 / getTotalWords('objects')}%, lightgray 0%);"></div>
-//                 <span>Beginner: ${progressData.objects.beginner}/${getTotalWords('objects')}</span>
-//                 <div class="circle" style="background: conic-gradient(#ff9800 ${progressData.objects.intermediate * 100 / getTotalWords('objects')}%, lightgray 0%);"></div>
-//                 <span>Intermediate: ${progressData.objects.intermediate}/${getTotalWords('objects')}</span>
-//                 <div class="circle" style="background: conic-gradient(#f44336 ${progressData.objects.advanced * 100 / getTotalWords('objects')}%, lightgray 0%);"></div>
-//                 <span>Advanced: ${progressData.objects.advanced}/${getTotalWords('objects')}</span>
-//             </div>
-//             <p>Total Words: ${getTotalWords('objects')}</p>
-//         </div>
-//     `;
+    let progressHTML = '';
 
-//     // Update the total progress count
-//     const totalWordsLearnedElement = document.getElementById('total-words-learned');
-//     totalWordsLearnedElement.textContent = `Total Words Learned: ${totalWordsLearned}`;
-// }
+    for (const category in progressByCategoryLevel) {
+        progressHTML += `<div class="progress-category"><h3>${category}</h3><div class="progress-levels">`;
+
+        for (const level in progressByCategoryLevel[category]) {
+            const { learned, total } = progressByCategoryLevel[category][level];
+            const percentage = total > 0 ? (learned / total) * 100 : 0;
+
+            progressHTML += `
+                <div class="progress-level">
+                    <div class="circle" style="background: conic-gradient(#4caf50 ${percentage}%, lightgray 0%);"></div>
+                    <span>${level}: ${learned}/${total}</span>
+                </div>
+            `;
+        }
+
+        progressHTML += `</div></div>`;
+    }
+
+    progressHTML += `<p>Total Words Learned: ${totalWordsLearned}</p>`;
+
+    progressContainer.innerHTML = progressHTML;
+}
+
+// Fetch and display the progress report when the page loads
+document.addEventListener('DOMContentLoaded', async () => {
+    const progressData = await fetchProgressReport();
+    if (progressData) {
+        updateProgressDisplay(progressData);
+    } else {
+        alert('Failed to fetch progress report. Please try again later.');
+    }
+});

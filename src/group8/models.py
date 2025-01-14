@@ -23,7 +23,7 @@ class UserProfile(models.Model):
         return f"{self.user.username}'s Profile"
 
 class Word(models.Model):
-    title = models.CharField(max_length=255, default="none")
+    title = models.CharField(max_length=255, default="none",unique=True)
     level = models.CharField(max_length=50, default="none")
     category = models.CharField(max_length=50, default="none")
     image_url = models.URLField(max_length=255, default="images/default_image.jpg")
@@ -70,7 +70,7 @@ class UserProgress(models.Model):
             cnt = row['count']
             result[cat] = cnt
         return result
-
+    
     def get_learned_by_level(self):
         """
         Returns a dictionary like {"Beginner": 3, "Intermediate": 1, ...}
@@ -83,6 +83,12 @@ class UserProgress(models.Model):
             cnt = row['count']
             result[lvl] = cnt
         return result
+
+    def get_learned_by_category_and_level(self, category, level):
+        """
+        Returns a list of words learned by the user for a specific category and level.
+        """
+        return self.learned_words.filter(category=category, level=level)
 
     def __str__(self):
         return f"Progress for {self.user.username}"
@@ -102,4 +108,3 @@ class Request(models.Model):
 
     def str(self):
         return f"{self.user.username} - {self.request_type} - {self.word.title}"
-    

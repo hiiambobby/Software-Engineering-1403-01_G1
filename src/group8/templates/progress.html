@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Progress Report</title>
-    <link rel="stylesheet" href="{% static 'group8/progress.css' %}">
-    <link rel="shortcut icon" href="{% static 'group8/favicon.png' %}" type="image/png">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script defer src="{% static 'group8/progress.js' %}"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Report</title>
+  <link rel="stylesheet" href="{% static 'group8/progress.css' %}">
+  <link rel="shortcut icon" href="{% static 'group8/favicon.png' %}" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="{% static 'group8/progress.js' %}"></script>
 </head>
-
 <body>
-    <header>
-        <h1>Progress Report</h1>
-    </header>
+  <header>
+    <h1>Progress Report</h1>
+  </header>
 
-    <section id="progress">
-        <h2>Your Learning Progress</h2>
-        <div id="progress-container"></div> <!-- This div will be populated with progress data -->
-    </section>
+  <section id="progress">
+    <h2>Your Learning Progress</h2>
+    <!-- Show total words learned here -->
+    <h3 id="total-words-learned">Total Words Learned: 0</h3>
 
-    <button id="show-progress-btn">Show Progress</button>
+    <div id="progress-container"></div> <!-- This div will be populated with progress data -->
+  </section>
+
+  <button id="show-progress-btn">Show Progress</button>
 </body>
-
 </html>
