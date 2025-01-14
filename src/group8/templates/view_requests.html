@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Requests</title>
+</head>
+<body>
+    <h1>View Requests</h1>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Word</th>
+            <th>Request Type</th>
+            <th>Data</th>
+            <th>Actions</th>
+        </tr>
+        {% for request in requests %}
+        <tr>
+            <td>{{ request.user.username }}</td>
+            <td>{{ request.word.title }}</td>
+            <td>{{ request.get_request_type_display }}</td>
+            <td>{{ request.data }}</td>
+            <td>
+                <a href="{% url 'group8:approve_request' request.id %}">Approve</a>
+                <a href="{% url 'group8:reject_request' request.id %}">Reject</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
