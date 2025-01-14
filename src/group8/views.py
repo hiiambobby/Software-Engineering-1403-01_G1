@@ -13,6 +13,7 @@ from .services import WordService
 from .models import Word, UserProgress, UserProfile, Request
 from django.core.files.base import ContentFile
 from django.contrib.admin.views.decorators import staff_member_required
+import uuid
 
 
 def home(request):
@@ -125,10 +126,11 @@ def add_word_view(request):
             if image_data and image_data.startswith("data:image"):
                 format, imgstr = image_data.split(';base64,')  # Split format and image data
                 ext = format.split('/')[-1]  # Get file extension
-                image_file = ContentFile(base64.b64decode(imgstr), name=f"word_image.{ext}")
+                unique_filename = f"{uuid.uuid4()}.{ext}"
+                image_file = ContentFile(base64.b64decode(imgstr), name=unique_filename)
 
                 # Save image to the media directory
-                image_path = f"media/words/{image_file.name}"
+                image_path = f"media/words/{unique_filename}"
                 with open(image_path, "wb") as f:
                     f.write(image_file.read())
                 data["image_url"] = image_path  # Update with saved path
