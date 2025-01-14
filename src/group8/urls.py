@@ -13,7 +13,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     #saba added this
     path("add_word_page/", views.add_word_page, name="add_word_page"),
-    path("progress/", views.progress, name="progress"),
+    path("progress/", views.ProgressReport, name="progress"),
 
     path("add-word/", views.add_word_view, name="add_word"),
 

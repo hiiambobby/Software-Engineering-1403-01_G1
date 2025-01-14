@@ -19,8 +19,8 @@ def home(request):
 def add_word_page(request):
     return render(request, 'add_word_page.html', {'group_number': '8'})
     
-def progress(request):
-    return render(request, 'progress.html', {'group_number': '8'})
+# def progress(request):
+#     return render(request, 'progress.html', {'group_number': '8'})
 
 
 def Signup8Page(request):
@@ -223,7 +223,7 @@ def progress_report_view(request):
         if progress_data:
             print('progresssssssssssss')
             print(progress_data)
-            return render(request, 'progress.html', {'group_number': '8'})
+            #return render(request, 'progress.html', {'group_number': '8'})
             #return render(request, 'progress.html', progress_data)
             return JsonResponse({
                 "total_words_learned": progress_data["total_learned"],
