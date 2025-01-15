@@ -15,7 +15,7 @@
     <header>
         <div id="header-container">
             <h1>Learn Words with Pictures</h1>
-            <button id="sound-btn" aria-label="Toggle Sound">🔊</button>
+            <button id = "logout-btn" aria-label="Logout">Logout</button>
         </div>
     </header>
 
@@ -33,7 +33,7 @@
                 <form>
                     <label for="category">Category:</label>
                     <select id="category">
-                        <option value="" selected disabled>Not selected</option>
+                        <option value="" selected enabled>Not selected</option>
                         <option value="animals">Animals</option>
                         <option value="objects">Objects</option>
                         <option value="fruits">Fruits</option>
@@ -41,7 +41,7 @@
 
                     <label for="level">Level:</label>
                     <select id="level">
-                        <option value="" selected disabled>Not selected</option>
+                        <option value="" selected enabled>Not selected</option>
                         <option value="beginner">Beginner</option>
                         <option value="intermediate">Intermediate</option>
                         <option value="advanced">Advanced</option>
@@ -70,6 +70,42 @@
             <div id="pagination-controls"></div>
         </section>
     </div>
+    <script>
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            try {
+                const response = await fetch("{% url 'group8:logout8' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                if (response.ok) {
+                    window.location.href = "{% url 'group8:login8' %}";
+                } else {
+                    alert('Logout failed.');
+                   
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
 </body>
 
 </html>

@@ -129,19 +129,16 @@ function updateWordDisplay(words = allWords) {
 
     const word = words[currentPage];
     wordList.innerHTML = `
-        <li class="word-item">
+        <li class="word-item" style="text-align: center; width: 500px; margin: auto;">
             <h3>${word.title}</h3>
-            <img src="${word.image_url}" alt="${word.title}" class="word-image">
-            <div class="button-container">
-                <button class="learned-btn">I know this word!</button>
-                <button class="dont-remember-btn">I don't remember</button>
-                <button class="favorite-btn">Like</button>
-                <button class="edit-btn">Edit</button>
-                <button class="delete-btn">Delete</button>
+            <img src="${word.image_url}" alt="${word.title}" class="word-image" style="max-width: 400px; max-height: 400px; display: block; margin: 0 auto;">
+            <div class="button-container" style="margin-top: 10px; display: flex; justify-content: center; gap: 10px;">
+                <button class="learned-btn" style="padding: 10px; font-size: 16px;">✔️</button>
+                <button class="edit-btn" style="padding: 10px; font-size: 16px;">✏️</button>
+                <button class="delete-btn" style="padding: 10px; font-size: 16px;">🗑️</button>
             </div>
         </li>
     `;
-
     // 'I know this word' button functionality
     document.querySelector('.learned-btn').addEventListener('click', async () => {
         try {
@@ -160,17 +157,7 @@ function updateWordDisplay(words = allWords) {
         }
     });
 
-    // 'I don't remember' button functionality
-    document.querySelector('.dont-remember-btn').addEventListener('click', () => {
-        if (isSoundOn) alert('Keep trying!');
-    });
-
-    // 'Favorite' button functionality
-    document.querySelector('.favorite-btn').addEventListener('click', (event) => {
-        event.target.textContent = 'Liked';
-        event.target.disabled = true;
-    });
-
+  
     // 'Edit' button functionality
     document.querySelector('.edit-btn').addEventListener('click', () => {
         const newTitle = prompt("Enter the new title:", word.title);
@@ -196,9 +183,11 @@ function updateWordDisplay(words = allWords) {
 
     // Update pagination controls
     paginationControls.innerHTML = `
-        <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''}>Previous</button>
-        <span>Word ${currentPage + 1} of ${words.length}</span>
-        <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''}>Next</button>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 25px;">
+            <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''} style="padding: 10px; font-size: 16px;">⬅️</button>
+            <span>Word ${currentPage + 1} of ${words.length}</span>
+            <button id="next-btn" ${currentPage === words.length - 1 ? 'disabled' : ''} style="padding: 10px; font-size: 16px;">➡️</button>
+        </div>
     `;
 
     // Add event listeners for pagination buttons
@@ -219,15 +208,15 @@ if (startBtn) {
     startBtn.addEventListener('click', async () => {
         const category = document.getElementById('category').value;
         const level = document.getElementById('level').value;
-        if (category || level) {
-            const words = await loadWordsFromBackend(category, level);
-            allWords = words;      // your global array
-            currentPage = 0;       // reset pagination to page 0
-            updateWordDisplay();   // now displays real data from Django
-        } else {
-            alert('Please select category or level to start learning.');
+    
+        const words = await loadWordsFromBackend(category, level);
+        allWords = words;      // your global array
+        currentPage = 0;       // reset pagination to page 0
+        updateWordDisplay();   // now displays real data from Django
+        
+        // alert('Please select category or level to start learning.');
         }
-    });
+    );
 }
 
 async function loadAndDisplayWords() {

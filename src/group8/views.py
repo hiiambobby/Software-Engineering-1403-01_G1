@@ -59,22 +59,17 @@ def Signup8Page(request):
 
 
 def Login8Page(request):
-    print("salam..............................................")
     if request.method == 'POST':
         username = request.POST.get('username')
         pass1 = request.POST.get('pass')
-        print(username)
-        print(pass1)
         user = authenticate(request, username=username, password=pass1)
         if user is not None:
             login(request, user)
-            return redirect('group8:home')  
+            return redirect('group8:home')
         else:
-            print(user)
-            return HttpResponse(f"Username or Password is incorrect!!!{user}") 
+            return render(request, 'login8.html', {'error': 'Username or Password is incorrect.'})
     elif request.method == "GET":
         return render(request, 'login8.html')
-
 
 def Logout8Page(request):
     logout(request)
