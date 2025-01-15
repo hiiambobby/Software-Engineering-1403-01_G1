@@ -196,14 +196,12 @@ if (startBtn) {
     startBtn.addEventListener('click', async () => {
         const category = document.getElementById('category').value;
         const level = document.getElementById('level').value;
-        if (category || level) {
+       
             const words = await loadWordsFromBackend(category, level);
             allWords = words;      // your global array
             currentPage = 0;       // reset pagination to page 0
             updateWordDisplay();   // now displays real data from Django
-        } else {
-            alert('Please select category or level to start learning.');
-        }
+      
     });
 }
 
