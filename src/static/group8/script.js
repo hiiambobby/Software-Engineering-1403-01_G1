@@ -40,6 +40,15 @@ let progressData = {
 };
 let totalWordsLearned = 0; // To track total words learned
 
+// Toggle sound icon
+let isSoundOn = true;
+const soundBtn = document.getElementById('sound-btn');
+if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+        isSoundOn = !isSoundOn;
+        soundBtn.textContent = isSoundOn ? '🔊' : '🔇';
+    });
+}
 
 // Search functionality
 const searchBar = document.getElementById('search-bar');
@@ -130,8 +139,6 @@ function updateWordDisplay(words = allWords) {
             </div>
         </li>
     `;
-    
-    
     // 'I know this word' button functionality
     document.querySelector('.learned-btn').addEventListener('click', async () => {
         try {
