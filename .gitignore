@@ -1,0 +1,15 @@
+# Ignore Python bytecode and cache files
+*.pyc
+__pycache__/
+
+# Ignore SQLite database file
+src/db.sqlite3
+
+# Ignore specific directories and subdirectories
+src/database/__pycache__/
+src/english_website/__pycache__/
+src/group1/__pycache__/
+src/group1/migrations/__pycache__/
+src/group2/__pycache__/
+src/group2/migrations/__pycache__/
+src/group3/__pycache__/
