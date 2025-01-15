@@ -48,10 +48,12 @@ header h1 {
 }
 
 #logout-btn {
-    background: none;
+    background: white;
     border: 2px solid white;
-    color: white;
+    color: #ff8c00;
     font-size: 16px;
+    border-radius: 5px;
+    padding: 5px 10px;
     cursor: pointer;
     position: absolute;
     left: 20px;
@@ -371,7 +373,7 @@ option {
 }
 
 .button-container button.delete-btn {
-    background-color: red;
+    background-color: rgb(177, 20, 20);
     color: white;
     border: none;
     cursor: pointer;
@@ -381,3 +383,5 @@ option {
 .button-container button.delete-btn:hover {
     background-color: darkred;
 }
+
+
