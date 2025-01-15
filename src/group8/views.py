@@ -51,7 +51,7 @@ def Signup8Page(request):
             user = User.objects.create_user(username=uname, email=email, password=pass1)
             user.save()
             login(request, user)
-            return redirect('group8:home')
+            return redirect('group8:welcome')
         except IntegrityError:
             return render(request, 'signup8.html', {'error': 'An error occurred while creating your account. Please try again.'})
 
@@ -65,7 +65,7 @@ def Login8Page(request):
         user = authenticate(request, username=username, password=pass1)
         if user is not None:
             login(request, user)
-            return redirect('group8:home')
+            return redirect('group8:welcome')
         else:
             return render(request, 'login8.html', {'error': 'Username or Password is incorrect.'})
     elif request.method == "GET":
@@ -307,4 +307,8 @@ def fetch_all_words_view(request):
         ]
         return JsonResponse({"words": words_list}, status=200)
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@login_required
+def WelcomePage(request):
+    return render(request, 'welcome.html')
 
