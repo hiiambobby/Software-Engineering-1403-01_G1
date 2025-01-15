@@ -26,10 +26,10 @@ def add_word_page(request):
     
 # def progress(request):
 #     return render(request, 'progress.html', {'group_number': '8'})
+
 @login_required
 def WelcomePage(request):
-    return render(request, 'welcome.html')
-
+    return render(request,'welcome.html')
 
 def Signup8Page(request):
     if request.method == 'POST':
