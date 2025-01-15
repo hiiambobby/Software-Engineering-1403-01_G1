@@ -2,7 +2,7 @@
 from django.urls import path,include
 from . import views
 from django.contrib import admin
-from .views import Signup8Page, Login8Page, Logout8Page, fetch_all_words_view
+from .views import Signup8Page, Login8Page, Logout8Page, fetch_all_words_view,WelcomePage
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -16,7 +16,7 @@ urlpatterns = [
     #saba added this
     path("add_word_page/", views.add_word_page, name="add_word_page"),
     path("progress/", views.ProgressReport, name="progress"),
-
+    path("welcome/", views.WelcomePage, name="welcome"),
     path("add-word/", views.add_word_view, name="add_word"),
 #  path('like-word/<int:word_id>/', views.like_word, name='like_word'),
     path("delete-word/<int:word_id>/", views.delete_word_view, name="delete_word"),

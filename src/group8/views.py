@@ -27,6 +27,9 @@ def add_word_page(request):
 # def progress(request):
 #     return render(request, 'progress.html', {'group_number': '8'})
 
+@login_required
+def WelcomePage(request):
+    return render(request,'welcome.html')
 
 def Signup8Page(request):
     if request.method == 'POST':
@@ -51,7 +54,7 @@ def Signup8Page(request):
             user = User.objects.create_user(username=uname, email=email, password=pass1)
             user.save()
             login(request, user)
-            return redirect('group8:home')
+            return redirect('group8:welcome')
         except IntegrityError:
             return render(request, 'signup8.html', {'error': 'An error occurred while creating your account. Please try again.'})
 
@@ -65,7 +68,7 @@ def Login8Page(request):
         user = authenticate(request, username=username, password=pass1)
         if user is not None:
             login(request, user)
-            return redirect('group8:home')
+            return redirect('group8:welcome')
         else:
             return render(request, 'login8.html', {'error': 'Username or Password is incorrect.'})
     elif request.method == "GET":

@@ -8,7 +8,7 @@
     <title>Signup</title>
     <link rel="stylesheet" href="{% static 'group8/styles.css' %}">
     <link rel="shortcut icon" href="{% static 'group8/favicon.png' %}" type="image/png">
-    <script defer src="{% static 'group8/signup.js' %}"></script>
+    <script defer src="{% static 'group8/sign.js' %}"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
@@ -150,7 +150,11 @@
             placeholder="Confirm your password">
 
         <button type="submit">Signup</button>
-        <div id="error-message"></div>
+        <div id="error-message">
+            {% if error %}
+                <p>{{ error }}</p>
+            {% endif %}    
+        </div>
         <div class="login-link">
             <p>Already have an account? <a href="{% url 'group8:login8' %}">Log in</a></p>
         </div>
